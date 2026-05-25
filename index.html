@@ -746,7 +746,13 @@
     <p class="section-desc">We are proud to have powered prominent logistics, educational, healthcare, and hospitality landmarks across the region.</p>
   </div>
   
- 
+  <div class="buildings-grid">
+    <a href="hospitals.html" class="building-card">
+      <img src="images/hospitals.jpg" alt="Hospitals" class="building-bg">
+      <div class="card-content">
+        <div class="building-name">Hospitals</div>
+        <div class="building-desc">High-precision BMS for medical facilities.</div>
+      </div>
     </a>
     <a href="schools.html" class="building-card">
       <img src="images/schools.jpg" alt="Schools" class="building-bg">
@@ -778,6 +784,64 @@
     </a>
   </div>
 </section>
+
+<style>
+  .buildings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    padding: 40px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .building-card {
+    position: relative;
+    height: 350px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: hidden;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: transform 0.3s ease;
+  }
+
+  .building-card:hover { transform: translateY(-10px); }
+
+  .building-bg {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    z-index: 1;
+  }
+
+  .building-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(to top, rgba(10, 22, 40, 0.9), rgba(10, 22, 40, 0.2));
+    z-index: 2;
+  }
+
+  .card-content {
+    position: relative;
+    z-index: 3;
+    padding: 25px;
+    color: white;
+  }
+
+  .building-name {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--orange);
+    margin-bottom: 10px;
+  }
+
+  .building-desc { font-size: 0.9rem; opacity: 0.9; }
+</style>
 
 <section id="products">
   <div class="reveal">
