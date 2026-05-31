@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hotels, Warehouses & Facilities – Kieback & Peter ME LLC</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;600;700&display=swap');
+  :root{--orange:#E8730A;--dark-navy:#060E1A;--mid-navy:#0F2040;--white:#F5F0E8;--gray:#8899AA;}
+  *{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}
+  body{background:var(--dark-navy);color:var(--white);font-family:'Rajdhani',sans-serif;overflow-x:hidden;cursor:none;min-height:100vh;}
+  .cursor{position:fixed;width:12px;height:12px;background:var(--orange);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);}
+  .cursor-ring{position:fixed;width:36px;height:36px;border:2px solid rgba(232,115,10,0.5);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:transform 0.15s;}
+  #bg-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;opacity:0.4;}
+  nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:20px 60px;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(to bottom,rgba(6,14,26,0.95),transparent);backdrop-filter:blur(10px);}
+  .logo{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;letter-spacing:1px;color:var(--white);text-decoration:none;}.logo span{color:var(--orange);}
+  .back-btn{display:flex;align-items:center;gap:8px;color:var(--gray);text-decoration:none;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;transition:color 0.3s;}.back-btn:hover{color:var(--white);}
+  section{position:relative;z-index:1;}
+  .page-hero{padding:160px 60px 60px;animation:fadeUp 1s ease 0.2s both;}
+  .breadcrumb{display:flex;align-items:center;gap:10px;color:var(--gray);font-size:13px;letter-spacing:1px;text-transform:uppercase;margin-bottom:20px;}.breadcrumb a{color:var(--gray);text-decoration:none;transition:color 0.3s;}.breadcrumb a:hover{color:var(--orange);}.breadcrumb span{color:var(--orange);}.breadcrumb::before{content:'';width:30px;height:1px;background:var(--orange);}
+  .hero-tag{color:var(--orange);font-size:13px;letter-spacing:3px;text-transform:uppercase;margin-bottom:16px;}
+  .page-hero h1{font-family:'Rajdhani',sans-serif;font-size:clamp(44px,6vw,90px);font-weight:700;line-height:0.95;letter-spacing:-2px;margin-bottom:24px;}.page-hero h1 span{color:var(--orange);}
+  .page-hero p{color:var(--gray);font-size:18px;line-height:1.8;max-width:650px;margin-bottom:40px;}
+  .hero-stats{display:flex;gap:50px;padding-bottom:60px;border-bottom:1px solid rgba(255,255,255,0.06);}
+  .stat{text-align:left;}.stat-num{font-family:'Rajdhani',sans-serif;font-size:38px;font-weight:700;color:var(--orange);display:block;}.stat-label{font-size:12px;color:var(--gray);letter-spacing:2px;text-transform:uppercase;}
+  .projects-section{padding:60px 60px 60px;}
+  .section-label{color:var(--orange);font-size:12px;letter-spacing:4px;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:12px;}.section-label::before{content:'';width:40px;height:2px;background:var(--orange);}
+  .section-title{font-family:'Rajdhani',sans-serif;font-size:clamp(28px,3.5vw,48px);font-weight:700;line-height:1;margin-bottom:40px;}
+  .sub-section{margin-bottom:80px;}
+  .sub-label{display:flex;align-items:center;gap:12px;color:var(--gray);font-size:12px;letter-spacing:3px;text-transform:uppercase;margin-bottom:24px;}.sub-label::before{content:'';width:20px;height:1px;background:var(--gray);}
+  .projects-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+  .projects-grid.two{grid-template-columns:repeat(2,1fr);}
+  .proj-card{background:var(--mid-navy);border:1px solid rgba(255,255,255,0.06);position:relative;overflow:hidden;transition:all 0.4s cubic-bezier(0.25,1,0.5,1);}
+  .proj-card:hover{border-color:rgba(232,115,10,0.35);transform:translateY(-8px);box-shadow:0 20px 40px rgba(0,0,0,0.35);}
+  .proj-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--orange);transform:scaleX(0);transform-origin:left;transition:transform 0.4s;z-index:3;}.proj-card:hover::after{transform:scaleX(1);}
+  .proj-img{width:100%;height:220px;background:#020710;position:relative;overflow:hidden;}
+  .proj-img img{width:100%;height:100%;object-fit:cover;transition:transform 0.6s ease;}.proj-card:hover .proj-img img{transform:scale(1.07);}
+  .proj-img-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0a1a30,#0f2040);}.proj-img-placeholder svg{width:60px;height:60px;opacity:0.25;}
+  .proj-body{padding:26px;}
+  .proj-location{color:var(--orange);font-size:11px;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:8px;}.proj-location::before{content:'';width:6px;height:6px;background:var(--orange);border-radius:50%;}
+  .proj-name{font-family:'Rajdhani',sans-serif;font-size:21px;font-weight:700;margin-bottom:4px;color:var(--white);line-height:1.2;}
+  .proj-type{color:var(--gray);font-size:13px;margin-bottom:14px;}
+  .proj-tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
+  .tag{background:rgba(232,115,10,0.12);color:var(--orange);font-size:11px;padding:4px 12px;border-radius:20px;letter-spacing:1px;font-weight:600;}.tag.gray{background:rgba(136,153,170,0.12);color:var(--gray);}
+  .proj-meta{display:flex;justify-content:space-between;align-items:center;padding-top:14px;border-top:1px solid rgba(255,255,255,0.05);}
+  .proj-points{font-family:'Rajdhani',sans-serif;font-size:19px;font-weight:700;color:var(--white);}.proj-points small{font-size:11px;color:var(--gray);letter-spacing:1px;display:block;font-weight:400;}
+  .proj-value{text-align:right;font-size:15px;color:var(--orange);font-weight:700;}.proj-value small{font-size:11px;color:var(--gray);display:block;font-weight:400;}
+  footer{padding:40px 60px;border-top:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;align-items:center;color:var(--gray);font-size:13px;position:relative;z-index:1;margin-top:60px;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
+  .reveal{opacity:0;transform:translateY(40px);transition:opacity 0.8s ease,transform 0.8s ease;}.reveal.visible{opacity:1;transform:translateY(0);}
+  @media(max-width:1024px){.projects-grid,.projects-grid.two{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:768px){nav{padding:16px 20px;}.page-hero{padding:120px 20px 40px;}.hero-stats{flex-wrap:wrap;gap:24px;}.projects-section{padding:40px 20px 60px;}.projects-grid,.projects-grid.two{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+<canvas id="bg-canvas"></canvas>
+<nav>
+  <a href="index.html" class="logo">KIEBACK <span>&</span> PETER ME LLC</a>
+  <a href="portfolio.html" class="back-btn">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    All Categories
+  </a>
+</nav>
+
+<section class="page-hero">
+  <div class="breadcrumb">
+    <a href="portfolio.html">Projects</a>
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    <span>Hotels, Warehouses</span>
+  </div>
+  <div class="hero-tag">Hospitality & Industry</div>
+  <h1>HOTELS<br><span>& WAREHOUSES</span></h1>
+  <p>From five-star hospitality in Lebanon to large-scale logistics hubs in Abu Dhabi — delivering intelligent BMS across diverse commercial environments.</p>
+  <div class="hero-stats">
+    <div class="stat"><span class="stat-num">2</span><span class="stat-label">Projects</span></div>
+    <div class="stat"><span class="stat-num">5,000+</span><span class="stat-label">BMS Points</span></div>
+    <div class="stat"><span class="stat-num">2</span><span class="stat-label">Countries</span></div>
+  </div>
+</section>
+
+<section class="projects-section">
+
+  <!-- Hotels -->
+  <div class="sub-section reveal">
+    <div class="section-label">Hospitality</div>
+    <h2 class="section-title">Hotels</h2>
+    <div class="projects-grid two">
+
+      <div class="proj-card">
+        <div class="proj-img">
+          <img src="images/four_seasons.png" alt="Four Seasons Hotel Beirut" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="proj-img-placeholder" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+        </div>
+        <div class="proj-body">
+          <div class="proj-location">Beirut, Lebanon</div>
+          <div class="proj-name">Four Seasons Hotel</div>
+          <div class="proj-type">5-Star Luxury Hotel · Hospitality</div>
+          <div class="proj-tags"><span class="tag">BMS Systems</span><span class="tag gray">Full Integration</span></div>
+          <div class="proj-meta">
+            <div class="proj-points">3,000<small>BMS Points</small></div>
+            <div class="proj-value">USD 500K<small>Project Value</small></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Warehouses -->
+  <div class="sub-section reveal">
+    <div class="section-label">Industrial & Logistics</div>
+    <h2 class="section-title">Warehouses</h2>
+    <div class="projects-grid two">
+
+      <div class="proj-card">
+        <div class="proj-img">
+          <img src="images/noon.png" alt="NOON Warehouse KIZAD" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="proj-img-placeholder" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
+        </div>
+        <div class="proj-body">
+          <div class="proj-location">KIZAD, Abu Dhabi</div>
+          <div class="proj-name">NOON Warehouse – KIZAD</div>
+          <div class="proj-type">Logistics & Warehousing Facility</div>
+          <div class="proj-tags"><span class="tag">Energy Management</span><span class="tag gray">EMS</span></div>
+          <div class="proj-meta">
+            <div class="proj-points">2,000+<small>BMS Points</small></div>
+            <div class="proj-value">AED 1.2M<small>Project Value</small></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+    </div>
+  </div>
+
+</section>
+
+<footer>
+  <span>© 2018 Kieback & Peter ME LLC — Made in Germany since 1927</span>
+</footer>
+
+<script>
+const cursor=document.getElementById('cursor'),cursorRing=document.getElementById('cursor-ring');
+let mx=0,my=0,cx=0,cy=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+function animCursor(){cx+=(mx-cx)*0.15;cy+=(my-cy)*0.15;cursor.style.left=mx+'px';cursor.style.top=my+'px';cursorRing.style.left=cx+'px';cursorRing.style.top=cy+'px';requestAnimationFrame(animCursor);}
+animCursor();
+const bgCanvas=document.getElementById('bg-canvas'),bgCtx=bgCanvas.getContext('2d');
+let bgW,bgH,particles=[];
+function initBg(){bgW=bgCanvas.width=window.innerWidth;bgH=bgCanvas.height=window.innerHeight;particles=[];for(let i=0;i<80;i++)particles.push({x:Math.random()*bgW,y:Math.random()*bgH,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,r:Math.random()*2+.5,opacity:Math.random()*.4+.1});}
+function drawBg(){bgCtx.clearRect(0,0,bgW,bgH);bgCtx.strokeStyle='rgba(232,115,10,0.04)';bgCtx.lineWidth=1;for(let x=0;x<bgW;x+=80){bgCtx.beginPath();bgCtx.moveTo(x,0);bgCtx.lineTo(x,bgH);bgCtx.stroke();}for(let y=0;y<bgH;y+=80){bgCtx.beginPath();bgCtx.moveTo(0,y);bgCtx.lineTo(bgW,y);bgCtx.stroke();}particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>bgW)p.vx*=-1;if(p.y<0||p.y>bgH)p.vy*=-1;bgCtx.beginPath();bgCtx.arc(p.x,p.y,p.r,0,Math.PI*2);bgCtx.fillStyle=`rgba(232,115,10,${p.opacity})`;bgCtx.fill();});requestAnimationFrame(drawBg);}
+window.addEventListener('resize',initBg);initBg();drawBg();
+const reveals=document.querySelectorAll('.reveal');
+const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:0.05});
+reveals.forEach(r=>observer.observe(r));
+</script>
+</body>
+</html>

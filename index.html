@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kieback & Peter ME LLC - We Inspire Buildings</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Rajdhani:wght@300;400;600;700&display=swap');
+
+  :root {
+    --orange: #E8730A;
+    --dark-orange: #C4600A;
+    --navy: #111111;
+    --dark-navy: #060E1A;
+    --mid-navy: #0F2040;
+    --white: #F5F0E8;
+    --gray: #8899AA;
+    --light: #D4E0EC;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--dark-navy);
+    color: var(--white);
+    font-family: 'Rajdhani', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  .cursor { position: fixed; width: 12px; height: 12px; background: var(--orange); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); transition: transform 0.1s, width 0.2s, height 0.2s; }
+  .cursor-ring { position: fixed; width: 36px; height: 36px; border: 2px solid rgba(232,115,10,0.5); border-radius: 50%; pointer-events: none; z-index: 9998; transform: translate(-50%, -50%); transition: transform 0.15s, width 0.3s, height 0.3s; }
+
+  #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; opacity: 0.6; }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 20px 60px;
+    display: flex; justify-content: space-between; align-items: center;
+    background: linear-gradient(to bottom, rgba(6,14,26,0.95), transparent);
+    backdrop-filter: blur(10px);
+  }
+  .logo { font-family: 'Rajdhani', sans-serif; font-size: 24px; font-weight: 700; letter-spacing: 1px; color: var(--white); text-decoration: none; }
+  .logo span { color: var(--orange); }
+  nav ul { display: flex; list-style: none; gap: 40px; }
+  nav ul a { color: var(--gray); text-decoration: none; font-size: 14px; font-weight: 600; letter-spacing: 1px; transition: color 0.3s; position: relative; text-transform: uppercase; }
+  nav ul a::after { content: ''; position: absolute; bottom: -4px; left: 0; right: 0; height: 2px; background: var(--orange); transform: scaleX(0); transition: transform 0.3s; }
+  nav ul a:hover { color: var(--white); }
+  nav ul a:hover::after { transform: scaleX(1); }
+  nav ul a.active { color: var(--orange); }
+  nav ul a.active::after { transform: scaleX(1); }
+
+  /* Projects CTA Button in nav */
+  .nav-projects-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--orange); color: var(--dark-navy) !important;
+    padding: 8px 20px; font-size: 13px !important;
+    font-weight: 700 !important; letter-spacing: 1px;
+    text-transform: uppercase; text-decoration: none;
+    transition: all 0.3s !important;
+  }
+  .nav-projects-btn:hover { background: var(--dark-orange); transform: translateY(-2px); }
+  .nav-projects-btn::after { display: none !important; }
+
+  section { position: relative; z-index: 1; }
+
+  /* Hero */
+  #hero { height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column; text-align: center; padding: 0 40px; overflow: hidden; }
+  .hero-badge { background: rgba(232,115,10,0.15); border: 1px solid rgba(232,115,10,0.4); color: var(--orange); padding: 6px 20px; border-radius: 30px; font-size: 13px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 30px; animation: fadeUp 1s ease 0.2s both; }
+  .hero-title { font-family: 'Rajdhani', sans-serif; font-size: clamp(56px, 9vw, 130px); font-weight: 700; line-height: 0.9; letter-spacing: -2px; margin-bottom: 30px; animation: fadeUp 1s ease 0.4s both; }
+  .hero-title .line1 { display: block; color: var(--white); }
+  .hero-title .line2 { display: block; color: var(--orange); }
+  .hero-sub { font-size: 18px; color: var(--gray); max-width: 600px; line-height: 1.8; margin-bottom: 50px; animation: fadeUp 1s ease 0.6s both; }
+  .hero-stats { display: flex; gap: 60px; animation: fadeUp 1s ease 0.8s both; }
+  .stat-item { text-align: center; }
+  .stat-num { font-family: 'Rajdhani', sans-serif; font-size: 48px; font-weight: 700; color: var(--orange); display: block; }
+  .stat-label { font-size: 12px; color: var(--gray); letter-spacing: 2px; text-transform: uppercase; }
+
+  /* Hero CTA */
+  .hero-cta { display: flex; gap: 16px; margin-bottom: 50px; animation: fadeUp 1s ease 0.75s both; }
+  .btn-primary { display: inline-flex; align-items: center; gap: 10px; padding: 14px 36px; background: var(--orange); color: var(--dark-navy); font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700; text-decoration: none; letter-spacing: 1px; text-transform: uppercase; transition: all 0.3s; }
+  .btn-primary:hover { background: var(--dark-orange); transform: translateY(-3px); box-shadow: 0 10px 30px rgba(232,115,10,0.3); }
+  .btn-primary svg { width: 16px; height: 16px; }
+  .btn-secondary { display: inline-flex; align-items: center; gap: 10px; padding: 14px 36px; border: 1px solid rgba(232,115,10,0.4); color: var(--white); font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700; text-decoration: none; letter-spacing: 1px; text-transform: uppercase; transition: all 0.3s; }
+  .btn-secondary:hover { border-color: var(--orange); background: rgba(232,115,10,0.08); transform: translateY(-3px); }
+
+  .scroll-hint { position: absolute; bottom: 40px; display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--gray); font-size: 11px; letter-spacing: 2px; animation: fadeUp 1s ease 1.2s both; }
+  .scroll-line { width: 1px; height: 60px; background: linear-gradient(to bottom, var(--orange), transparent); animation: scrollPulse 2s ease-in-out infinite; }
+
+  /* Buildings */
+  #buildings { padding: 120px 60px; background: linear-gradient(to bottom, transparent, rgba(15,32,64,0.5)); }
+  .section-label { color: var(--orange); font-size: 12px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+  .section-label::before { content: ''; width: 40px; height: 2px; background: var(--orange); }
+  .section-title { font-family: 'Rajdhani', sans-serif; font-size: clamp(36px, 5vw, 72px); font-weight: 700; line-height: 1; margin-bottom: 20px; }
+  .section-desc { color: var(--gray); font-size: 16px; line-height: 1.8; max-width: 600px; margin-bottom: 60px; }
+  .buildings-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .building-card { background: rgba(15,32,64,0.5); border: 1px solid rgba(255,255,255,0.05); padding: 40px; transition: all 0.4s ease; position: relative; overflow: hidden; }
+  .building-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: var(--orange); transform: scaleX(0); transition: transform 0.4s; }
+  .building-card:hover { transform: translateY(-5px); border-color: rgba(232,115,10,0.3); }
+  .building-card:hover::after { transform: scaleX(1); }
+  .building-icon { width: 48px; height: 48px; margin-bottom: 30px; }
+  .building-icon svg { width: 100%; height: 100%; }
+  .building-name { font-family: 'Rajdhani', sans-serif; font-size: 24px; font-weight: 700; margin-bottom: 15px; }
+  .building-desc { color: var(--gray); font-size: 14px; line-height: 1.7; }
+
+  /* Products */
+  #products { padding: 120px 60px; }
+  .products-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 60px; }
+  .products-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  .product-card { background: linear-gradient(145deg, rgba(15,32,64,0.7) 0%, rgba(6,14,26,0.8) 100%); border: 1px solid rgba(255,255,255,0.05); padding: 35px 28px; border-radius: 4px; transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+  .product-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--orange), transparent); transform: scaleX(0); transition: transform 0.5s ease; }
+  .product-card:hover { border-color: rgba(232,115,10,0.3); transform: translateY(-8px); background: linear-gradient(145deg, rgba(20,40,75,0.8) 0%, rgba(6,14,26,0.9) 100%); box-shadow: 0 20px 40px rgba(232,115,10,0.1); }
+  .product-card:hover::before { transform: scaleX(1); }
+  .product-icon-container { width: 64px; height: 64px; background: radial-gradient(circle, rgba(232,115,10,0.15) 0%, transparent 70%); border: 1px solid rgba(232,115,10,0.2); border-radius: 4px; display: flex; align-items: center; justify-content: center; margin-bottom: 25px; transition: all 0.4s ease; }
+  .product-card:hover .product-icon-container { border-color: var(--orange); background: radial-gradient(circle, rgba(232,115,10,0.25) 0%, transparent 70%); transform: rotate(5deg) scale(1.05); box-shadow: 0 0 15px rgba(232,115,10,0.2); }
+  .product-icon-container svg { width: 32px; height: 32px; }
+  .product-name { font-family: 'Rajdhani', sans-serif; font-size: 20px; font-weight: 700; margin-bottom: 10px; color: var(--white); letter-spacing: 0.5px; }
+  .product-code { color: var(--orange); font-size: 11px; letter-spacing: 2px; margin-bottom: 12px; font-weight: 600; }
+  .product-desc { color: var(--gray); font-size: 13.5px; line-height: 1.7; }
+
+  /* Services */
+  #services { padding: 120px 60px; background: linear-gradient(135deg, rgba(15,32,64,0.4) 0%, transparent 100%); }
+  .services-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+  .service-list { display: flex; flex-direction: column; gap: 0; }
+  .service-item { padding: 24px 0; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; gap: 20px; align-items: flex-start; cursor: pointer; transition: all 0.3s; }
+  .service-item:hover { padding-left: 12px; }
+  .service-num { font-family: 'Rajdhani', sans-serif; font-size: 13px; color: var(--orange); min-width: 30px; padding-top: 4px; }
+  .service-content h3 { font-family: 'Rajdhani', sans-serif; font-size: 22px; font-weight: 700; margin-bottom: 6px; transition: color 0.3s; }
+  .service-item:hover h3 { color: var(--orange); }
+  .service-content p { color: var(--gray); font-size: 13px; line-height: 1.7; }
+  .service-visual { position: relative; height: 500px; }
+  .service-canvas { width: 100%; height: 100%; border: 1px solid rgba(232,115,10,0.2); }
+
+  /* Projects Preview */
+  #projects { padding: 120px 60px; }
+  .projects-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 50px; }
+  .view-all-btn { display: inline-flex; align-items: center; gap: 10px; color: var(--orange); text-decoration: none; font-size: 13px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; transition: gap 0.3s; border: 1px solid rgba(232,115,10,0.3); padding: 12px 24px; }
+  .view-all-btn:hover { gap: 16px; background: rgba(232,115,10,0.08); border-color: var(--orange); }
+  .view-all-btn svg { width: 16px; height: 16px; }
+  .projects-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; }
+  .project-card-v2 { background: var(--mid-navy); border: 1px solid rgba(255,255,255,0.06); border-radius: 4px; transition: all 0.4s ease; position: relative; overflow: hidden; display: flex; flex-direction: column; height: 410px; }
+  .project-img-holder { width: 100%; height: 220px; position: relative; overflow: hidden; background: #020710; }
+  .project-img-holder img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+  .project-card-v2:hover .project-img-holder img { transform: scale(1.08); }
+  .project-img-holder::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 40%, rgba(15,32,64,1) 100%); }
+  .project-details-box { padding: 25px; display: flex; flex-direction: column; flex-grow: 1; justify-content: space-between; background: var(--mid-navy); position: relative; z-index: 2; }
+  .project-card-v2::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--orange); transform: scaleX(0); transition: transform 0.4s; transform-origin: left; z-index: 3; }
+  .project-card-v2:hover::after { transform: scaleX(1); }
+  .project-card-v2:hover { border-color: rgba(232,115,10,0.3); transform: translateY(-6px); box-shadow: 0 15px 30px rgba(0,0,0,0.3); }
+  .project-country { color: var(--orange); font-size: 11px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .project-country::before { content: ''; width: 6px; height: 6px; background: var(--orange); border-radius: 50%; }
+  .project-name { font-family: 'Rajdhani', sans-serif; font-size: 21px; font-weight: 700; margin-bottom: 4px; color: var(--white); }
+  .project-type { color: var(--gray); font-size: 13px; margin-bottom: 15px; }
+  .project-tech { background: rgba(232,115,10,0.15); color: var(--orange); font-size: 11px; padding: 4px 12px; border-radius: 20px; display: inline-block; letter-spacing: 1px; font-weight: 600; }
+
+  /* Values */
+  #values { padding: 120px 60px; text-align: center; }
+  .values-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; margin-top: 60px; }
+  .value-item { padding: 40px 24px; background: rgba(15,32,64,0.4); border: 1px solid rgba(255,255,255,0.04); transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); position: relative; overflow: hidden; }
+  .value-item::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 50% 0%, rgba(232,115,10,0.08), transparent 70%); opacity: 0; transition: opacity 0.4s; }
+  .value-item:hover::before { opacity: 1; }
+  .value-item:hover { border-color: rgba(232,115,10,0.3); transform: translateY(-8px); box-shadow: 0 15px 35px rgba(232,115,10,0.08); }
+  .value-icon-container { width: 64px; height: 64px; background: radial-gradient(circle, rgba(232,115,10,0.12) 0%, transparent 70%); border: 1px solid rgba(232,115,10,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 25px auto; transition: all 0.4s ease; }
+  .value-item:hover .value-icon-container { border-color: var(--orange); background: radial-gradient(circle, rgba(232,115,10,0.25) 0%, transparent 70%); transform: scale(1.08); box-shadow: 0 0 15px rgba(232,115,10,0.2); }
+  .value-icon-container svg { width: 30px; height: 30px; }
+  .value-title { font-family: 'Rajdhani', sans-serif; font-size: 24px; font-weight: 700; margin-bottom: 12px; color: var(--white); }
+  .value-item:hover .value-title { color: var(--orange); }
+  .value-desc { color: var(--gray); font-size: 14px; line-height: 1.8; }
+
+  /* Contact */
+  #contact { padding: 100px 60px; }
+  .contact-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; }
+  .contact-left p { color: var(--light); font-size: 15px; line-height: 1.9; font-weight: 300; margin-bottom: 40px; }
+  .contact-info-list { display: flex; flex-direction: column; gap: 24px; }
+  .ci { display: flex; gap: 16px; align-items: flex-start; }
+  .ci-icon { width: 36px; height: 36px; border: 1px solid rgba(232,115,10,0.12); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ci-icon svg { width: 16px; height: 16px; }
+  .ci-label { font-size: 11px; color: var(--gray); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
+  .ci-value { font-size: 14px; color: var(--white); }
+  .contact-form-area { background: var(--mid-navy); border: 1px solid rgba(232,115,10,0.12); padding: 48px; }
+  .contact-form-area h3 { font-family: 'Rajdhani', sans-serif; font-size: 28px; font-weight: 700; margin-bottom: 32px; color: var(--white); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .form-group { margin-bottom: 16px; }
+  .form-group label { font-size: 11px; color: var(--gray); letter-spacing: 2px; text-transform: uppercase; display: block; margin-bottom: 8px; }
+  .form-group input, .form-group textarea { width: 100%; background: var(--dark-navy); border: 1px solid rgba(232,115,10,0.12); padding: 12px 16px; color: var(--white); font-family: 'Rajdhani', sans-serif; font-size: 14px; outline: none; transition: border-color 0.3s; }
+  .form-group input:focus, .form-group textarea:focus { border-color: rgba(232,115,10,0.5); }
+  .form-group textarea { resize: vertical; }
+  .btn-contact { display: inline-flex; align-items: center; gap: 10px; padding: 14px 32px; background: var(--orange); color: var(--dark-navy); font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; text-decoration: none; transition: all 0.3s; }
+  .btn-contact:hover { background: var(--dark-orange); transform: translateY(-2px); box-shadow: 0 12px 32px rgba(232,115,10,0.4); }
+  .cta-btn { display: inline-block; margin-top: 40px; padding: 16px 48px; background: var(--orange); color: var(--dark-navy); font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 700; text-decoration: none; letter-spacing: 1px; transition: all 0.3s; border: none; cursor: pointer; text-transform: uppercase; }
+  .cta-btn:hover { background: var(--dark-orange); transform: translateY(-3px); box-shadow: 0 10px 30px rgba(232,115,10,0.3); }
+
+  footer { padding: 40px 60px; border-top: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; align-items: center; color: var(--gray); font-size: 13px; }
+
+  @media (max-width: 1024px) {
+    .projects-grid, .products-grid, .values-grid, .buildings-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 15px !important; }
+  }
+  @media (max-width: 768px) {
+    .projects-grid, .products-grid, .values-grid, .buildings-grid, .services-layout { grid-template-columns: 1fr !important; gap: 20px !important; }
+    .contact-inner { grid-template-columns: 1fr !important; gap: 40px !important; }
+    .form-row { grid-template-columns: 1fr !important; }
+    .contact-form-area { padding: 28px 20px !important; }
+    .hero-title { font-size: clamp(40px, 12vw, 60px) !important; }
+    nav { padding: 20px !important; flex-direction: column !important; }
+    nav ul { gap: 15px !important; margin-top: 15px !important; flex-wrap: wrap; justify-content: center; }
+    section { padding: 60px 20px !important; }
+    .scroll-hint { display: none !important; }
+    .hero-cta { flex-direction: column; align-items: center; }
+    .projects-header { flex-direction: column; gap: 20px; align-items: flex-start; }
+  }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes scrollPulse { 0%, 100% { opacity: 0.4; transform: scaleY(1); } 50% { opacity: 1; transform: scaleY(1.2); } }
+  .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.8s ease, transform 0.8s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+<canvas id="bg-canvas"></canvas>
+
+<nav>
+  <a href="index.html" class="logo">KIEBACK <span>&</span> PETER ME LLC</a>
+  <ul>
+    
+    <li><a href="#products">Products</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#contact">Contact</a></li>
+    
+   
+  </ul>
+</nav>
+
+<section id="hero">
+  <div class="hero-badge">Since 2018 · UAE</div>
+  <h1 class="hero-title">
+    <span class="line1">WE INSPIRE</span>
+    <span class="line2">BUILDINGS</span>
+  </h1>
+  <p class="hero-sub">Germany's precision engineering meets the Middle East's ambition. Kieback&Peter ME delivers world-class BMS — automating HVAC, energy, and building intelligence across the UAE and beyond.</p>
+  <div class="hero-cta">
+    <a href="portfolio.html" class="btn-primary">
+      Explore Our Projects
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+    <a href="#contact" class="btn-secondary">Contact Us</a>
+  </div>
+  <div class="hero-stats">
+    <div class="stat-item"><span class="stat-num" data-target="75+">75+</span><span class="stat-label" >Employees In UAE</span></div>
+    <div class="stat-item"><span class="stat-num" data-target="52+">52+</span><span class="stat-label" >Locations Worldwide</span></div>
+    <div class="stat-item"><span class="stat-num" data-target="97+">97</span><span class="stat-label" >Years of Expertise</span></div>
+    <div class="stat-item"><span class="stat-num" data-target="50+">50+</span><span class="stat-label" >Projects</span></div>
+
+  </div>
+  
+    
+  
+</section>
+
+<section id="buildings">
+  <div class="reveal">
+    <div class="section-label">Our Solutions</div>
+    <h2 class="section-title">Smart Automation<br>for Every Building</h2>
+    <p class="section-desc">Whether it's an office, hospital, school, or residential tower — we deliver fully integrated building automation solutions ensuring comfort, efficiency, and safety.</p>
+  </div>
+  <div class="buildings-grid reveal">
+    <div class="building-card">
+      <div class="building-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2" ry="2"></rect><path d="M9 22V12h6v10M2 10h20M12 2v8"></path></svg></div>
+      <div class="building-name">Office Buildings</div>
+      <div class="building-desc">Intelligent control of climate, lighting, and energy to optimize workflow and efficiency.</div>
+    </div>
+    <div class="building-card">
+      <div class="building-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg></div>
+      <div class="building-name">Hospitals</div>
+      <div class="building-desc">Exceptional air quality and precise environmental control for operating rooms and labs.</div>
+    </div>
+    <div class="building-card">
+      <div class="building-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10v6M12 4L2 10l10 6 10-6z"></path><path d="M6 13.5V19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-5.5"></path></svg></div>
+      <div class="building-name">Schools & Universities</div>
+      <div class="building-desc">Comfortable, fresh learning environments that enhance student performance while saving energy.</div>
+    </div>
+  </div>
+</section>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Services Section</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ── CSS Variables (مطلوبة دائماً) ── */
+:root {
+  --amber:     #E8730A;
+  --amber-dim: rgba(232,115,10,0.15);
+  --amber-glow:rgba(232,115,10,0.4);
+  --ink:       #04080F;
+  --panel:     #0B1525;
+  --surface:   #0F1E35;
+  --edge:      rgba(232,115,10,0.12);
+  --text:      #E2EAF4;
+  --muted:     #6B84A0;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--ink); color:var(--text); font-family:'Barlow',sans-serif; }
+
+/* ── Section Label ── */
+.sec-label {
+  color: var(--amber);
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'Barlow', sans-serif;
+  font-weight: 600;
+}
+.sec-label::before {
+  content: '';
+  width: 30px;
+  height: 1px;
+  background: var(--amber);
+  flex-shrink: 0;
+}
+
+/* ── Section Title ── */
+.sec-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: clamp(40px, 5vw, 68px);
+  font-weight: 800;
+  line-height: 1;
+  color: var(--text);
+}
+
+/* ── Chip Tags ── */
+.chip {
+  background: var(--amber-dim);
+  color: var(--amber);
+  font-size: 10px;
+  padding: 3px 10px;
+  border-radius: 2px;
+  letter-spacing: 1px;
+  font-weight: 600;
+  font-family: 'Barlow', sans-serif;
+}
+
+/* ── Services Section ── */
+#services {
+  padding: 100px 64px;
+}
+
+.sec-header {
+  margin-bottom: 60px;
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--edge);
+}
+
+.svc {
+  background: var(--panel);
+  padding: 36px 28px;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.4s;
+  cursor: default;
+}
+
+/* الخط البرتقالي فوق كل كارد عند الـ hover */
+.svc::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--amber);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s;
+}
+.svc:hover::before { transform: scaleX(1); }
+.svc:hover         { background: var(--surface); }
+
+/* الرقم الكبير */
+.svc-num {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 48px;
+  font-weight: 900;
+  color: var(--amber-dim);
+  line-height: 1;
+  margin-bottom: 20px;
+  transition: color 0.3s;
+}
+.svc:hover .svc-num { color: rgba(232,115,10,0.3); }
+
+/* الأيقونة */
+.svc-icon {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--edge);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  transition: border-color 0.3s;
+}
+.svc:hover .svc-icon { border-color: rgba(232,115,10,0.4); }
+.svc-icon svg { width: 22px; height: 22px; }
+
+/* اسم الخدمة */
+.svc-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: var(--text);
+}
+
+/* الوصف */
+.svc-desc {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.7;
+  font-weight: 300;
+}
+
+/* التاجز */
+.svc-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 16px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1100px) {
+  .services-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+  #services { padding: 60px 20px; }
+  .services-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<section id="services">
+  <div class="sec-header">
+    <div class="sec-label">What We Deliver</div>
+    <h2 class="sec-title">Full BMS Lifecycle<br>Services</h2>
+  </div>
+
+  <div class="services-grid">
+
+    <!-- 01 -->
+    <div class="svc">
+      <div class="svc-num">01</div>
+      <div class="svc-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-linecap="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07M8.46 8.46a5 5 0 0 0 0 7.07"/>
+        </svg>
+      </div>
+      <div class="svc-name">Design & Supply</div>
+      <div class="svc-desc">Engineered BMS architecture tailored to your building's topology — from field devices to supervisor level.</div>
+      <div class="svc-tags">
+        <span class="chip">BACnet</span>
+        <span class="chip">KNX</span>
+        <span class="chip">LON</span>
+      </div>
+    </div>
+
+    <!-- 02 -->
+    <div class="svc">
+      <div class="svc-num">02</div>
+      <div class="svc-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-linecap="round">
+          <rect x="2" y="3" width="20" height="14" rx="2"/>
+          <path d="M8 21h8M12 17v4"/>
+        </svg>
+      </div>
+      <div class="svc-name">Installation</div>
+      <div class="svc-desc">Professional site installation of DDC controllers, field devices, and supervisory workstations.</div>
+      <div class="svc-tags">
+        <span class="chip">IP DDC</span>
+        <span class="chip">Controllers</span>
+      </div>
+    </div>
+
+    <!-- 03 -->
+    <div class="svc">
+      <div class="svc-num">03</div>
+      <div class="svc-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-linecap="round">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+        </svg>
+      </div>
+      <div class="svc-name">Testing & Commissioning</div>
+      <div class="svc-desc">Rigorous T&C protocols ensuring every control loop, sensor, and sequence performs to specification.</div>
+      <div class="svc-tags">
+        <span class="chip">T&C</span>
+        <span class="chip">Validation</span>
+      </div>
+    </div>
+
+    <!-- 04 -->
+    <div class="svc">
+      <div class="svc-num">04</div>
+      <div class="svc-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-linecap="round">
+          <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+        </svg>
+      </div>
+      <div class="svc-name">AMC & Support</div>
+      <div class="svc-desc">Annual maintenance contracts with remote diagnostics, preventive servicing, and 24/7 support.</div>
+      <div class="svc-tags">
+        <span class="chip">AMC</span>
+        <span class="chip">Remote</span>
+        <span class="chip">24/7</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+</body>
+</html>
+
+
+<section id="products">
+  <div class="reveal">
+    <div class="products-header">
+      <div>
+        <div class="section-label">Our Products</div>
+        <h2 class="section-title">Cutting-Edge<br>Control Technologies</h2>
+      </div>
+      <p class="section-desc" style="max-width:300px; margin:0">All our products are manufactured in Germany to the highest standards of quality and efficiency.</p>
+    </div>
+  </div>
+  <div class="products-grid reveal">
+    <div class="product-card">
+      <div class="product-icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line><path d="M6 8h10M6 12h5"></path></svg></div>
+      <div class="product-code">QANTEON</div>
+      <div class="product-name">BEMS System</div>
+      <div class="product-desc">An integrated platform combining building control and energy management. Winner of the German Design Award 2018.</div>
+    </div>
+    <div class="product-card">
+      <div class="product-icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="var(--white)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="M6 8h2v2H6zm0 4h2v2H6zm6-4h6v2h-6zm0 4h4v2h-4zM6 16h12v2H6z"></path></svg></div>
+      <div class="product-code">DDC4020e / DDC4040e</div>
+      <div class="product-name">Advanced Automation Stations</div>
+      <div class="product-desc">High-performance BACnet automation stations controlling 4-12 DDC systems with a 100,000 data point memory.</div>
+    </div>
+    <div class="product-card">
+      <div class="product-icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="var(--white)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6h-6zM4 14h6v6H4zM4 4h6v6H4zM19 14v6M16 17h6"></path></svg></div>
+      <div class="product-code">KP-ME-40x</div>
+      <div class="product-name">Controllers & Thermostats</div>
+      <div class="product-desc">Large LCD display with easy touch controls, ±0.5°C accuracy, RS485 connectivity, and internal/external sensor options.</div>
+    </div>
+    <div class="product-card">
+      <div class="product-icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="var(--white)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"></path></svg></div>
+      <div class="product-code">RCN-ME800</div>
+      <div class="product-name">Dual VAV Controllers</div>
+      <div class="product-desc">BACnet controllers for variable air volume with integrated flow sensors and 4.5 Nm torque actuator.</div>
+    </div>
+    <div class="product-card">
+      <div class="product-icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="var(--white)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path><path d="M2 12h20"></path></svg></div>
+      <div class="product-code">LKP201SYS</div>
+      <div class="product-name">CO₂ Sensor</div>
+      <div class="product-desc">Infrared CO₂ sensor with a range of 0-10000 ppm, ±40ppm accuracy, and IP6x industrial protection.</div>
+    </div>
+    <div class="product-card">
+      <div class="product-icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path><path d="M12 6v6l4 2"></path></svg></div>
+      <div class="product-code">KP-U7 / KP-U8</div>
+      <div class="product-name">Ultrasonic Water Meters</div>
+      <div class="product-desc">No moving parts, long-term high accuracy, dirt-resistant, IP68, supporting NB-IoT and LoRaWAN.</div>
+    </div>
+    <div class="product-card">
+      <div class="product-icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="var(--white)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg></div>
+      <div class="product-code">LKP101SYS</div>
+      <div class="product-name">Carbon Monoxide Sensor</div>
+      <div class="product-desc">Instant detection for parking lots and confined spaces. Response time ≤15s, with a 5+ year service lifespan.</div>
+    </div>
+    <div class="product-card">
+      <div class="product-icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg></div>
+      <div class="product-code">KPDL400</div>
+      <div class="product-name">Three-Phase Energy Meter</div>
+      <div class="product-desc">Class 0.5s high-precision energy measurement, Modbus RTU communication, and harmonic analysis up to the 31st order.</div>
+    </div>
+  </div>
+</section>
+
+<section id="services">
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Protocols Section</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ── CSS Variables (مطلوبة دائماً) ── */
+:root {
+  --amber:     #E8730A;
+  --amber-dim: rgba(232,115,10,0.15);
+  --amber-glow:rgba(232,115,10,0.4);
+  --ink:       #04080F;
+  --panel:     #0B1525;
+  --surface:   #0F1E35;
+  --edge:      rgba(232,115,10,0.12);
+  --text:      #E2EAF4;
+  --muted:     #6B84A0;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--ink); color:var(--text); font-family:'Barlow',sans-serif; }
+
+/* ── Section Label ── */
+.sec-label {
+  color: var(--amber);
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'Barlow', sans-serif;
+  font-weight: 600;
+}
+.sec-label::before {
+  content: '';
+  width: 30px;
+  height: 1px;
+  background: var(--amber);
+  flex-shrink: 0;
+}
+
+/* ── Section Title ── */
+.sec-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  line-height: 1.05;
+  color: var(--text);
+}
+
+/* ── Protocols Section ── */
+#protocols {
+  padding: 80px 64px;
+  background: var(--panel);
+  border-top: 1px solid var(--edge);
+  border-bottom: 1px solid var(--edge);
+}
+
+.proto-inner {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 80px;
+  align-items: center;
+}
+
+.proto-left p {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.8;
+  margin-top: 20px;
+  font-weight: 300;
+}
+
+/* الشبكة على اليمين */
+.proto-right {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+/* كل بادج بروتوكول */
+.proto-badge {
+  border: 1px solid var(--edge);
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: border-color 0.3s, background 0.3s;
+  background: var(--ink);
+  cursor: default;
+}
+.proto-badge:hover {
+  border-color: var(--amber-glow);
+  background: var(--surface);
+}
+
+.proto-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--amber);
+  line-height: 1;
+}
+
+.proto-desc {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.4;
+  font-weight: 300;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1100px) {
+  .proto-inner { grid-template-columns: 1fr; gap: 40px; }
+  .proto-right { grid-template-columns: repeat(4, 1fr); }
+}
+@media (max-width: 768px) {
+  #protocols { padding: 60px 20px; }
+  .proto-right { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .proto-right { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<section id="protocols">
+  <div class="proto-inner">
+
+    <!-- النص على اليسار -->
+    <div class="proto-left">
+      <div class="sec-label">Technology Stack</div>
+      <h2 class="sec-title" style="font-size:clamp(36px,4vw,52px)">
+        Open Protocols.<br>Universal Integration.
+      </h2>
+      <p>
+        Our systems speak every building automation language — ensuring interoperability
+        with any existing infrastructure, HVAC equipment, or third-party system.
+      </p>
+    </div>
+
+    <!-- الشبكة على اليمين -->
+    <div class="proto-right">
+      <div class="proto-badge">
+        <div class="proto-name">BACnet</div>
+        <div class="proto-desc">IP/MSTP · ASHRAE Standard</div>
+      </div>
+      <div class="proto-badge">
+        <div class="proto-name">KNX</div>
+        <div class="proto-desc">ISO 14543 · Smart Buildings</div>
+      </div>
+      <div class="proto-badge">
+        <div class="proto-name">LON</div>
+        <div class="proto-desc">LonWorks · FT-10 Network</div>
+      </div>
+      <div class="proto-badge">
+        <div class="proto-name">Modbus</div>
+        <div class="proto-desc">RTU/TCP · Industrial</div>
+      </div>
+      <div class="proto-badge">
+        <div class="proto-name">GRMS</div>
+        <div class="proto-desc">Guest Room Management</div>
+      </div>
+      <div class="proto-badge">
+        <div class="proto-name">VAV</div>
+        <div class="proto-desc">Variable Air Volume Control</div>
+      </div>
+      <div class="proto-badge">
+        <div class="proto-name">OPC-UA</div>
+        <div class="proto-desc">Unified Architecture · IIoT</div>
+      </div>
+      <div class="proto-badge">
+        <div class="proto-name">DALI</div>
+        <div class="proto-desc">Lighting Control · IEC 62386</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+</body>
+</html>
+
+<section id="projects">
+  <div class="projects-header reveal">
+    <div>
+      <div class="section-label">Our Regional Projects</div>
+      <h2 class="section-title">Key References<br>in the Middle East</h2>
+      <p class="section-desc" style="margin-bottom:0">A selection of our most prominent projects across the UAE and beyond.</p>
+    </div>
+    <a href="portfolio.html" class="view-all-btn">
+      View All Projects
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+  <div class="projects-grid reveal">
+    <div class="project-card-v2">
+      <div class="project-img-holder"><img src="images/mirdif.png" alt="Mirdif Private Hospital"></div>
+      <div class="project-details-box"><div><div class="project-country">UAE</div><div class="project-name">Mirdif Private Hospital</div><div class="project-type">Healthcare · Dubai</div></div><div><span class="project-tech">IP DDC + GRMS</span></div></div>
+    </div>
+    <div class="project-card-v2">
+      <div class="project-img-holder"><img src="images/court.jpg" alt="Court House"></div>
+      <div class="project-details-box"><div><div class="project-country">UAE</div><div class="project-name">Crown Prince Court House</div><div class="project-type">Government · Abu Dhabi</div></div><div><span class="project-tech">IP DDC Controllers</span></div></div>
+    </div>
+    <div class="project-card-v2">
+      <div class="project-img-holder"><img src="images/noon.png" alt="NOON Warehouse"></div>
+      <div class="project-details-box"><div><div class="project-country">UAE</div><div class="project-name">NOON Warehouse – KIZAD</div><div class="project-type">Logistics · Abu Dhabi</div></div><div><span class="project-tech">Energy Management System</span></div></div>
+    </div>
+  </div>
+  <div style="text-align:center; margin-top:50px;" class="reveal">
+    <a href="portfolio.html" class="cta-btn" style="display:inline-flex;align-items:center;gap:12px;">
+      Browse All Projects by Category
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</section>
+
+<section id="values">
+  <div class="reveal"><div class="section-label" style="justify-content:center">Our Values</div><h2 class="section-title">What Makes Us Different</h2></div>
+  <div class="values-grid reveal">
+    <div class="value-item">
+      <div class="value-icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
+      <div class="value-title">Premium Quality</div>
+      <div class="value-desc">Outstanding products with strict German standards. We collaborate with partners to turn requirements into cutting-edge solutions.</div>
+    </div>
+    <div class="value-item">
+      <div class="value-icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 0 1 10 10c0 5.523-4.477 10-10 10S2 17.523 2 12h10V2z"></path></svg></div>
+      <div class="value-title">Sustainability</div>
+      <div class="value-desc">A family-owned business championing green tech since 1927, balancing ecological, social, and economic interests.</div>
+    </div>
+    <div class="value-item">
+      <div class="value-icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A5 5 0 0 0 8 8c0 1.3.5 2.6 1.5 3.5.8.8 1.3 1.5 1.5 2.5"></path><line x1="9" y1="18" x2="15" y2="18"></line><line x1="10" y1="22" x2="14" y2="22"></line></svg></div>
+      <div class="value-title">Innovation</div>
+      <div class="value-desc">Smart, simplified solutions combining AI with BACnet, KNX, and LON protocols to construct the future of buildings.</div>
+    </div>
+    <div class="value-item">
+      <div class="value-icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div>
+      <div class="value-title">Commitment</div>
+      <div class="value-desc">We accompany your buildings at every stage — on-site, remotely, and through central premium support facilities.</div>
+    </div>
+  </div>
+</section>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Get in Touch</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ── CSS Variables ── */
+:root {
+  --amber:      #E8730A;
+  --amber-dim:  rgba(232,115,10,0.15);
+  --amber-glow: rgba(232,115,10,0.4);
+  --ink:        #04080F;
+  --panel:      #0B1525;
+  --surface:    #0F1E35;
+  --edge:       rgba(232,115,10,0.12);
+  --text:       #E2EAF4;
+  --muted:      #6B84A0;
+  --light-muted:#A8BDD0;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--ink); color: var(--text); font-family: 'Barlow', sans-serif; }
+
+/* ── Section Label ── */
+.sec-label {
+  color: var(--amber);
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 600;
+}
+.sec-label::before {
+  content: '';
+  width: 30px;
+  height: 1px;
+  background: var(--amber);
+  flex-shrink: 0;
+}
+
+/* ── Section Title ── */
+.sec-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: clamp(40px, 5vw, 68px);
+  font-weight: 800;
+  line-height: 1;
+  color: var(--text);
+}
+
+/* ── Contact Section ── */
+#contact {
+  padding: 100px 64px;
+}
+
+.sec-header {
+  margin-bottom: 60px;
+}
+
+.contact-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+}
+
+/* ── Info Side ── */
+.contact-left p {
+  color: var(--light-muted);
+  font-size: 15px;
+  line-height: 1.9;
+  font-weight: 300;
+  margin-bottom: 40px;
+}
+
+.contact-info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.ci {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.ci-icon {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--edge);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.ci-icon svg { width: 16px; height: 16px; }
+
+.ci-label {
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.ci-value {
+  font-size: 14px;
+  color: var(--text);
+}
+
+/* ── Form Side ── */
+.contact-form-area {
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  padding: 48px;
+}
+
+.contact-form-area h3 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 32px;
+  color: var(--text);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--edge);
+  padding: 12px 16px;
+  color: var(--text);
+  font-family: 'Barlow', sans-serif;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: rgba(232,115,10,0.5);
+}
+
+.form-group textarea {
+  resize: vertical;
+}
+
+/* ── Button ── */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 32px;
+  background: var(--amber);
+  color: var(--ink);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+.btn-primary:hover {
+  background: #FF8C1A;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(232,115,10,0.4);
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  #contact { padding: 60px 20px; }
+  .contact-inner { grid-template-columns: 1fr; gap: 40px; }
+  .form-row { grid-template-columns: 1fr; }
+  .contact-form-area { padding: 28px 20px; }
+}
+</style>
+</head>
+<body>
+
+<section id="contact">
+  <div class="sec-header">
+    <div class="sec-label">Get in Touch</div>
+    <h2 class="sec-title">Start Your<br>BMS Project</h2>
+  </div>
+
+  <div class="contact-inner">
+
+    <!-- اليسار: المعلومات -->
+    <div class="contact-left">
+      <p>Whether you're in design phase, looking to upgrade an existing system, or need AMC support — our team is ready to deliver a tailored BMS solution for your project.</p>
+      <div class="contact-info-list">
+
+        <div class="ci">
+          <div class="ci-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-linecap="round">
+              <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+          </div>
+          <div>
+            <div class="ci-label">Address</div>
+            <div class="ci-value">Al Asmawi Building, DIP1, Dubai, UAE</div>
+          </div>
+        </div>
+
+        <div class="ci">
+          <div class="ci-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-linecap="round">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 11.9 19.79 19.79 0 0 1 1.61 3.27C1.61 2.14 2.52 1.2 3.67 1.2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+            </svg>
+          </div>
+          <div>
+            <div class="ci-label">Phone</div>
+            <div class="ci-value">+971 4 5776821</div>
+          </div>
+        </div>
+
+        <div class="ci">
+          <div class="ci-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-linecap="round">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+          </div>
+          <div>
+            <div class="ci-label">Email</div>
+            <div class="ci-value">office-international@kieback-peter.de</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- اليمين: الفورم -->
+    <div class="contact-form-area">
+      <h3>Send a Message</h3>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Name</label>
+          <input type="text" placeholder="Your name">
+        </div>
+        <div class="form-group">
+          <label>Company</label>
+          <input type="text" placeholder="Your company">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" placeholder="your@email.com">
+      </div>
+
+      <div class="form-group" style="margin-bottom:24px;">
+        <label>Project Details</label>
+        <textarea rows="4" placeholder="Describe your project..."></textarea>
+      </div>
+
+      <a href="mailto:office-international@kieback-peter.de" class="btn-contact">
+        Send Message
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+    </div>
+
+  </div>
+</section>
+
+</body>
+</html>
+
+
+<footer>
+  <span>© 2018 Kieback & Peter ME LLC — Made in Germany since 1927</span>
+</footer>
+
+<script>
+const cursor=document.getElementById('cursor'),cursorRing=document.getElementById('cursor-ring');
+let mx=0,my=0,cx=0,cy=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+function animCursor(){cx+=(mx-cx)*0.15;cy+=(my-cy)*0.15;cursor.style.left=mx+'px';cursor.style.top=my+'px';cursorRing.style.left=cx+'px';cursorRing.style.top=cy+'px';requestAnimationFrame(animCursor);}
+animCursor();
+const bgCanvas=document.getElementById('bg-canvas'),bgCtx=bgCanvas.getContext('2d');
+let bgW,bgH,particles=[];
+function initBg(){bgW=bgCanvas.width=window.innerWidth;bgH=bgCanvas.height=window.innerHeight;particles=[];for(let i=0;i<120;i++){particles.push({x:Math.random()*bgW,y:Math.random()*bgH,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,r:Math.random()*2+.5,opacity:Math.random()*.5+.1});}}
+function drawBg(){bgCtx.clearRect(0,0,bgW,bgH);bgCtx.strokeStyle='rgba(232,115,10,0.04)';bgCtx.lineWidth=1;for(let x=0;x<bgW;x+=80){bgCtx.beginPath();bgCtx.moveTo(x,0);bgCtx.lineTo(x,bgH);bgCtx.stroke();}for(let y=0;y<bgH;y+=80){bgCtx.beginPath();bgCtx.moveTo(0,y);bgCtx.lineTo(bgW,y);bgCtx.stroke();}particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>bgW)p.vx*=-1;if(p.y<0||p.y>bgH)p.vy*=-1;bgCtx.beginPath();bgCtx.arc(p.x,p.y,p.r,0,Math.PI*2);bgCtx.fillStyle=`rgba(232,115,10,${p.opacity})`;bgCtx.fill();});for(let i=0;i<particles.length;i++){for(let j=i+1;j<particles.length;j++){const dx=particles[i].x-particles[j].x,dy=particles[i].y-particles[j].y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<120){bgCtx.beginPath();bgCtx.moveTo(particles[i].x,particles[i].y);bgCtx.lineTo(particles[j].x,particles[j].y);bgCtx.strokeStyle=`rgba(232,115,10,${0.08*(1-dist/120)})`;bgCtx.lineWidth=0.5;bgCtx.stroke();}}}requestAnimationFrame(drawBg);}
+window.addEventListener('resize',initBg);initBg();drawBg();
+const sc=document.getElementById('service-canvas');
+if(sc){const sCtx=sc.getContext('2d');sc.width=sc.offsetWidth;sc.height=sc.offsetHeight;const SW=sc.width,SH=sc.height;const nodes=[{x:SW/2,y:SH/2,label:'Qanteon',main:true},{x:SW*.2,y:SH*.25,label:'HVAC'},{x:SW*.8,y:SH*.25,label:'BACnet'},{x:SW*.15,y:SH*.65,label:'KNX'},{x:SW*.85,y:SH*.65,label:'LON'},{x:SW*.5,y:SH*.1,label:'Cloud'},{x:SW*.35,y:SH*.88,label:'Sensors'},{x:SW*.65,y:SH*.88,label:'Actuators'}];let st=0;function drawService(){sCtx.clearRect(0,0,SW,SH);st+=0.01;nodes.forEach((n,i)=>{if(i===0)return;const dx=n.x-nodes[0].x,dy=n.y-nodes[0].y;sCtx.strokeStyle='rgba(232,115,10,0.15)';sCtx.lineWidth=1;sCtx.setLineDash([5,5]);sCtx.lineDashOffset=-st*20;sCtx.beginPath();sCtx.moveTo(nodes[0].x,nodes[0].y);sCtx.lineTo(n.x,n.y);sCtx.stroke();sCtx.setLineDash([]);const prog=(Math.sin(st+i)*.5+.5);const px=nodes[0].x+dx*prog,py=nodes[0].y+dy*prog;sCtx.beginPath();sCtx.arc(px,py,3,0,Math.PI*2);sCtx.fillStyle='rgba(232,115,10,0.8)';sCtx.fill();});nodes.forEach((n,i)=>{const r=n.main?28:18;const pulse=Math.sin(st*2+i)*4;const grd=sCtx.createRadialGradient(n.x,n.y,0,n.x,n.y,r+pulse+20);grd.addColorStop(0,n.main?'rgba(232,115,10,0.3)':'rgba(232,115,10,0.1)');grd.addColorStop(1,'transparent');sCtx.fillStyle=grd;sCtx.beginPath();sCtx.arc(n.x,n.y,r+pulse+20,0,Math.PI*2);sCtx.fill();sCtx.fillStyle=n.main?'rgba(232,115,10,0.9)':'rgba(15,42,80,0.9)';sCtx.strokeStyle=n.main?'rgba(232,180,80,0.8)':'rgba(232,115,10,0.5)';sCtx.lineWidth=n.main?2:1;sCtx.beginPath();sCtx.arc(n.x,n.y,r+pulse,0,Math.PI*2);sCtx.fill();sCtx.stroke();sCtx.fillStyle=n.main?'#060E1A':'#F5F0E8';sCtx.font=`${n.main?'bold ':''}${n.main?11:10}px Rajdhani`;sCtx.textAlign='center';sCtx.textBaseline='middle';sCtx.fillText(n.label,n.x,n.y);});requestAnimationFrame(drawService);}drawService();}
+function animateCount(el,target,suffix){let current=0;const step=target/60;const timer=setInterval(()=>{current+=step;if(current>=target){current=target;clearInterval(timer);}el.textContent=Math.floor(current).toLocaleString()+suffix;},16);}
+document.querySelectorAll('.stat-num[data-target]').forEach(el=>{const raw=el.dataset.target;const suffix=raw.includes('+')?'+':'';animateCount(el,parseInt(raw),suffix);});
+const reveals=document.querySelectorAll('.reveal');
+const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:0.15});
+reveals.forEach(r=>observer.observe(r));
+</script>
+</body>
+</html>
