@@ -490,6 +490,23 @@ body { background:var(--ink); color:var(--text); font-family:'Barlow',sans-serif
   #services { padding: 60px 20px; }
   .services-grid { grid-template-columns: 1fr; }
 }
+
+/* التحكم في الماوس حسب نوع الشاشة */
+@media (max-width: 1024px) {
+    body { cursor: auto !important; }
+    .cursor { display: none !important; }
+}
+@media (min-width: 1025px) {
+    body { cursor: none; }
+}
+
+/* تأثير التفاعل عند مرور الماوس على المشاريع */
+.project-card-v2:hover {
+    cursor: pointer;
+    transform: translateY(-5px);
+    transition: transform 0.3s ease;
+}
+
 </style>
 </head>
 <body>
