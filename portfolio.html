@@ -267,7 +267,7 @@
 
 <div class="stats-bar">
   <div class="stat"><span class="stat-num" data-target="50+"></span><span class="stat-label">Total Projects</span></div>
-  <div class="stat"><span class="stat-num" data-target="120M+"></span><span class="stat-label">EMS + BMS Points</span></div>
+  <div class="stat"><span class="stat-num" data-target="120 M+"></span><span class="stat-label">EMS + BMS Points</span></div>
   <div class="stat"><span class="stat-num" data-target="6+"></span><span class="stat-label">Emirates Covered</span></div>
   <div class="stat"><span class="stat-num" data-target="15+"></span><span class="stat-label">Years in UAE</span></div>
 </div>
@@ -488,7 +488,8 @@ function drawBg(){
 window.addEventListener('resize',initBg);initBg();drawBg();
 
 function animateCount(el,target,suffix){let current=0;const step=target/60;const timer=setInterval(()=>{current+=step;if(current>=target){current=target;clearInterval(timer);}el.textContent=Math.floor(current).toLocaleString()+suffix;},16);}
-document.querySelectorAll('.stat-num[data-target]').forEach(el=>{const raw=el.dataset.target;const suffix = raw.replace(/[0-9]/g, '');
+document.querySelectorAll('.stat-num[data-target]').forEach(el=>{const raw=el.dataset.target;const suffix=raw.includes('+')?'+':'';animateCount(el,parseInt(raw),suffix);});
+
 const reveals=document.querySelectorAll('.reveal');
 const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:0.1});
 reveals.forEach(r=>observer.observe(r));
