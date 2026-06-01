@@ -491,26 +491,6 @@ body { background:var(--ink); color:var(--text); font-family:'Barlow',sans-serif
   .services-grid { grid-template-columns: 1fr; }
 }
 
-/* إخفاء الماوس المخصص تماماً على الموبايل والتابلت */
-@media screen and (max-width: 1024px) {
-    .cursor {
-        display: none !important;
-        visibility: hidden !important;
-        pointer-events: none !important;
-        opacity: 0 !important;
-    }
-    body {
-        cursor: auto !important;
-    }
-}
-
-/* إخفاء الماوس الافتراضي فقط على شاشات الكمبيوتر */
-@media screen and (min-width: 1025px) {
-    body {
-        cursor: none;
-    }
-}
-
 </style>
 </head>
 <body>
@@ -1211,11 +1191,37 @@ body { background: var(--ink); color: var(--text); font-family: 'Barlow', sans-s
 </footer>
 
 <script>
-const cursor=document.getElementById('cursor'),cursorRing=document.getElementById('cursor-ring');
-let mx=0,my=0,cx=0,cy=0;
-document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
-function animCursor(){cx+=(mx-cx)*0.15;cy+=(my-cy)*0.15;cursor.style.left=mx+'px';cursor.style.top=my+'px';cursorRing.style.left=cx+'px';cursorRing.style.top=cy+'px';requestAnimationFrame(animCursor);}
+// --- كود الماوس الذكي (يعمل فقط على الشاشات الكبيرة) ---
+const cursor = document.getElementById('cursor');
+const cursorRing = document.getElementById('cursor-ring');
+let mx = 0, my = 0, cx = 0, cy = 0;
+
+document.addEventListener('mousemove', e => {
+    mx = e.clientX;
+    my = e.clientY;
+});
+
+function animCursor() {
+    // التحقق من عرض الشاشة - إذا كان أقل من 1024 بكسل (هاتف/تابلت) يتم الإخفاء
+    if (window.innerWidth <= 1024) {
+        if(cursor) cursor.style.display = 'none';
+        if(cursorRing) cursorRing.style.display = 'none';
+    } else {
+        if(cursor) cursor.style.display = 'block';
+        if(cursorRing) cursorRing.style.display = 'block';
+        cx += (mx - cx) * 0.15;
+        cy += (my - cy) * 0.15;
+        cursor.style.left = mx + 'px';
+        cursor.style.top = my + 'px';
+        cursorRing.style.left = cx + 'px';
+        cursorRing.style.top = cy + 'px';
+    }
+    requestAnimationFrame(animCursor);
+}
 animCursor();
+// ----------------------------------------------------
+
+// باقي كود الموقع (الخلفية، الأشكال، إلخ..)
 const bgCanvas=document.getElementById('bg-canvas'),bgCtx=bgCanvas.getContext('2d');
 let bgW,bgH,particles=[];
 function initBg(){bgW=bgCanvas.width=window.innerWidth;bgH=bgCanvas.height=window.innerHeight;particles=[];for(let i=0;i<120;i++){particles.push({x:Math.random()*bgW,y:Math.random()*bgH,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,r:Math.random()*2+.5,opacity:Math.random()*.5+.1});}}
@@ -1229,5 +1235,3 @@ const reveals=document.querySelectorAll('.reveal');
 const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:0.15});
 reveals.forEach(r=>observer.observe(r));
 </script>
-</body>
-</html>
