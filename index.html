@@ -911,7 +911,7 @@ body { background:var(--ink); color:var(--text); font-family:'Barlow',sans-serif
     </div>
   </div>
 </section>
-   /* ─── قسم مستكشف الـ 3D المدمج ─── */
+
 <section id="model-explorer" class="reveal">
 
   <div class="corner-accent tl"></div>
@@ -1670,7 +1670,7 @@ const reveals=document.querySelectorAll('.reveal');
 const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:0.15});
 reveals.forEach(r=>observer.observe(r));
 
-/* ─── قسم مستكشف الـ 3D المدمج ─── */
+
 // ─── تحريك أشرطة التقدم وتصاعد الأرقام عند التمرير للقسم ───
   const bmsBars = [
     { fill: 'bar-integration', pct: document.querySelector('.pct-integration'), target: 98 },
