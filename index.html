@@ -320,11 +320,22 @@
     pointer-events: none; z-index: 2;
   }
 
-  .viewer-corner { position: absolute; width: 20px; height: 20px; z-index: 3; pointer-events: none; }
-  .viewer-corner.vtl { top: 0; left: 0; border-top: 2px solid var(--orange); border-left: 2px solid var(--orange); }
-  .viewer-corner.vtr { top: 0; right: 0; border-top: 2px solid var(--orange); border-right: 2px solid var(--orange); }
-  .viewer-corner.vbl { bottom: 0; left: 0; border-bottom: 2px solid var(--orange); border-left: 2px solid var(--orange); }
-  .viewer-corner.vbr { bottom: 0; right: 0; border-bottom: 2px solid var(--orange); border-right: 2px solid var(--orange); }
+/* نقل الزوايا لتغطي كامل الـ HUD من الخارج على مستوى الخطين الأزرقين */
+.viewer-corner { 
+  position: absolute; 
+  width: 14px; 
+  height: 14px; 
+  border: 2px solid var(--orange); 
+  z-index: 10; 
+  pointer-events: none; 
+}
+/* الزوايا العلوية تصعد فوق شريط التحكم تماماً */
+.viewer-corner.vtl { top: -2px; left: -2px; border-right:0; border-bottom:0; }
+.viewer-corner.vtr { top: -2px; right: -2px; border-left:0; border-bottom:0; }
+
+/* الزوايا السفلية تنزل تحت الشريط السفلي تماماً */
+.viewer-corner.vbl { bottom: -2px; left: -2px; border-right:0; border-top:0; }
+.viewer-corner.vbr { bottom: -2px; right: -2px; border-left:0; border-top:0; }
 
   .hud-bottom { display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; border-top: 1px solid rgba(232,115,10,0.15); background: rgba(15,32,64,0.5); }
   .hud-controls { display: flex; align-items: center; gap: 24px; }
