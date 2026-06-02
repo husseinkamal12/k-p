@@ -390,6 +390,142 @@
     .cta-note { margin-left: 0; }
     .hud-controls, .corner-accent { display: none; }
   }
+
+  /* ─── قسم مستكشف الـ 3D المدمج ─── */
+  #model-explorer {
+    position: relative;
+    padding: 120px 60px;
+    overflow: hidden;
+    background: linear-gradient(180deg, rgba(6,14,26,0) 0%, rgba(15,32,64,0.25) 50%, rgba(6,14,26,0) 100%);
+  }
+
+  /* شبكة الخطوط الخلفية التقنية */
+  #model-explorer::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(232,115,10,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(232,115,10,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+
+  /* زوايا الديكور الهندسية */
+  .corner-accent { position: absolute; width: 80px; height: 80px; pointer-events: none; }
+  .corner-accent.tl { top: 40px; left: 40px; border-top: 2px solid var(--orange); border-left: 2px solid var(--orange); opacity: 0.4; }
+  .corner-accent.tr { top: 40px; right: 40px; border-top: 2px solid var(--orange); border-right: 2px solid var(--orange); opacity: 0.4; }
+  .corner-accent.bl { bottom: 40px; left: 40px; border-bottom: 2px solid var(--orange); border-left: 2px solid var(--orange); opacity: 0.4; }
+  .corner-accent.br { bottom: 40px; right: 40px; border-bottom: 2px solid var(--orange); border-right: 2px solid var(--orange); opacity: 0.4; }
+
+  .explorer-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 56px; position: relative; z-index: 2; }
+  .explorer-header .section-title { font-size: clamp(36px, 5vw, 68px); font-weight: 700; line-height: 0.95; letter-spacing: -1px; }
+  .explorer-header .section-title span { color: var(--orange); }
+
+  .header-right { text-align: right; max-width: 340px; }
+  .header-right p { color: var(--gray); font-size: 14px; line-height: 1.8; margin-bottom: 20px; }
+
+  .model-badge { display: inline-flex; align-items: center; gap: 8px; border: 1px solid rgba(232,115,10,0.3); padding: 7px 16px; font-size: 11px; letter-spacing: 2px; color: var(--orange); text-transform: uppercase; }
+  .model-badge-dot { width: 6px; height: 6px; background: var(--orange); border-radius: 50%; animation: pulse 2s ease-in-out infinite; }
+
+  @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.7); } }
+
+  .explorer-layout { display: grid; grid-template-columns: 1fr 280px; gap: 24px; position: relative; z-index: 2; }
+  .viewer-wrapper { position: relative; }
+  .viewer-hud { position: relative; background: rgba(6,14,26,0.8); border: 1px solid rgba(232,115,10,0.2); }
+  
+  .hud-bar { display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; border-bottom: 1px solid rgba(232,115,10,0.15); background: rgba(15,32,64,0.5); }
+  .hud-bar-left { display: flex; align-items: center; gap: 16px; }
+  .hud-dot-row { display: flex; gap: 6px; }
+  .hud-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .hud-dot.red   { background: #FF5F57; }
+  .hud-dot.amber { background: #FFBD2E; }
+  .hud-dot.green { background: #28CA41; }
+  .hud-title { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--orange); letter-spacing: 1px; }
+
+  .hud-bar-right { display: flex; align-items: center; gap: 20px; }
+  .hud-stat { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--gray); letter-spacing: 1px; }
+  .hud-stat span { color: var(--orange); margin-left: 4px; }
+
+  .viewer-iframe-wrap { position: relative; width: 100%; height: 560px; overflow: hidden; }
+  .viewer-iframe-wrap iframe { width: 100%; height: 100%; border: none; display: block; }
+
+  .scanline-overlay {
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px);
+    pointer-events: none; z-index: 2;
+  }
+
+  .viewer-corner { position: absolute; width: 20px; height: 20px; z-index: 3; pointer-events: none; }
+  .viewer-corner.vtl { top: 0; left: 0; border-top: 2px solid var(--orange); border-left: 2px solid var(--orange); }
+  .viewer-corner.vtr { top: 0; right: 0; border-top: 2px solid var(--orange); border-right: 2px solid var(--orange); }
+  .viewer-corner.vbl { bottom: 0; left: 0; border-bottom: 2px solid var(--orange); border-left: 2px solid var(--orange); }
+  .viewer-corner.vbr { bottom: 0; right: 0; border-bottom: 2px solid var(--orange); border-right: 2px solid var(--orange); }
+
+  .hud-bottom { display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; border-top: 1px solid rgba(232,115,10,0.15); background: rgba(15,32,64,0.5); }
+  .hud-controls { display: flex; align-items: center; gap: 24px; }
+  .hud-control-item { display: flex; align-items: center; gap: 8px; font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--gray); }
+  .hud-control-item svg { opacity: 0.6; }
+  .hud-status { display: flex; align-items: center; gap: 8px; font-family: 'Share Tech Mono', monospace; font-size: 10px; color: #28CA41; }
+  .status-dot { width: 6px; height: 6px; background: #28CA41; border-radius: 50%; animation: pulse 2s ease-in-out infinite; }
+
+  .sidebar { display: flex; flex-direction: column; gap: 16px; }
+  .spec-card { background: rgba(15,32,64,0.5); border: 1px solid rgba(232,115,10,0.15); padding: 24px; position: relative; overflow: hidden; }
+  .spec-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--orange), transparent); }
+  .spec-card-title { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--orange); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; }
+  
+  .spec-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .spec-row:last-child { border-bottom: none; }
+  .spec-key { font-size: 11px; color: var(--gray); letter-spacing: 1px; text-transform: uppercase; }
+  .spec-val { font-family: 'Share Tech Mono', monospace; font-size: 12px; color: var(--white); }
+  .spec-val.highlight { color: var(--orange); }
+
+  .spec-progress-wrap { margin-top: 4px; }
+  .spec-progress-label { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 6px; }
+  .spec-progress-label span:first-child { color: var(--gray); letter-spacing: 1px; text-transform: uppercase; }
+  .spec-progress-label span:last-child { font-family: 'Share Tech Mono', monospace; color: var(--orange); }
+  .spec-progress-bar { height: 2px; background: rgba(255,255,255,0.06); position: relative; overflow: hidden; }
+  .spec-progress-fill { height: 100%; background: linear-gradient(90deg, var(--orange), var(--dark-orange)); position: relative; transition: width 1.5s cubic-bezier(0.25, 1, 0.5, 1); }
+  .spec-progress-fill::after { content: ''; position: absolute; right: 0; top: 50%; transform: translateY(-50%); width: 4px; height: 4px; background: var(--orange); border-radius: 50%; }
+
+  .data-feed { background: rgba(6,14,26,0.9); border: 1px solid rgba(232,115,10,0.15); padding: 20px; flex: 1; }
+  .data-feed-title { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--orange); letter-spacing: 2px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; }
+  .data-feed-title::after { content: ''; width: 6px; height: 6px; background: #28CA41; border-radius: 50%; animation: pulse 1.5s ease-in-out infinite; }
+  
+  .data-line { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.03); font-family: 'Share Tech Mono', monospace; font-size: 10px; animation: fadeSlide 0.3s ease; }
+  .data-line:last-child { border-bottom: none; }
+  .data-time { color: rgba(232,115,10,0.5); min-width: 45px; }
+  .data-text { color: var(--gray); flex: 1; }
+  .data-val { color: var(--white); text-align: right; }
+  .data-val.ok { color: #28CA41; }
+  .data-val.warn { color: #FFB800; }
+
+  .explorer-cta { margin-top: 24px; display: flex; align-items: center; gap: 16px; position: relative; z-index: 2; }
+  .cta-btn-primary { display: inline-flex; align-items: center; gap: 10px; padding: 14px 32px; background: var(--orange); color: var(--dark-navy); font-size: 13px; font-weight: 700; text-decoration: none; letter-spacing: 1px; text-transform: uppercase; transition: all 0.3s; border: none; cursor: pointer; }
+  .cta-btn-primary:hover { background: var(--dark-orange); transform: translateY(-2px); box-shadow: 0 12px 30px rgba(232,115,10,0.3); }
+  .cta-btn-ghost { display: inline-flex; align-items: center; gap: 10px; padding: 14px 32px; border: 1px solid rgba(232,115,10,0.35); color: var(--white); font-size: 13px; font-weight: 700; text-decoration: none; letter-spacing: 1px; text-transform: uppercase; transition: all 0.3s; }
+  .cta-btn-ghost:hover { border-color: var(--orange); background: rgba(232,115,10,0.07); transform: translateY(-2px); }
+  .cta-note { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--gray); margin-left: auto; letter-spacing: 1px; }
+  .cta-note span { color: var(--orange); }
+
+  @keyframes fadeSlide { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: translateX(0); } }
+
+  @media (max-width: 1100px) {
+    .explorer-layout { grid-template-columns: 1fr; }
+    .sidebar { flex-direction: row; flex-wrap: wrap; }
+    .spec-card, .data-feed { min-width: 240px; flex: 1; }
+    .explorer-header { flex-direction: column; align-items: flex-start; gap: 24px; }
+    .header-right { text-align: left; max-width: 100%; }
+  }
+
+  @media (max-width: 768px) {
+    #model-explorer { padding: 60px 20px; }
+    .viewer-iframe-wrap { height: 380px; }
+    .sidebar { flex-direction: column; }
+    .explorer-cta { flex-direction: column; align-items: flex-start; }
+    .cta-note { margin-left: 0; }
+    .hud-controls, .corner-accent { display: none; }
+  }
 </style>
 </head>
 <body>
@@ -775,7 +911,168 @@ body { background:var(--ink); color:var(--text); font-family:'Barlow',sans-serif
     </div>
   </div>
 </section>
+   /* ─── قسم مستكشف الـ 3D المدمج ─── */
+<section id="model-explorer" class="reveal">
 
+  <div class="corner-accent tl"></div>
+  <div class="corner-accent tr"></div>
+  <div class="corner-accent bl"></div>
+  <div class="corner-accent br"></div>
+
+  <div class="explorer-header">
+    <div class="header-left">
+      <div class="section-label">Interactive 3D</div>
+      <h2 class="section-title">Explore the BMS<br><span>in Full Detail</span></h2>
+    </div>
+    <div class="header-right">
+      <p>Rotate, zoom, and inspect the Kieback&Peter S-BMS hardware — every connector, module, and component in interactive 3D. Built to German precision.</p>
+      <div class="model-badge">
+        <div class="model-badge-dot"></div>
+        Live 3D · AR Ready
+      </div>
+    </div>
+  </div>
+
+  <div class="explorer-layout">
+
+    <div class="viewer-wrapper">
+      <div class="viewer-hud">
+
+        <div class="hud-bar">
+          <div class="hud-bar-left">
+            <div class="hud-dot-row">
+              <div class="hud-dot red"></div>
+              <div class="hud-dot amber"></div>
+              <div class="hud-dot green"></div>
+            </div>
+            <div class="hud-title">S-BMS // 3D MODEL VIEWER v2.4</div>
+          </div>
+          <div class="hud-bar-right">
+            <div class="hud-stat">POLY<span>1.2M</span></div>
+            <div class="hud-stat">VERT<span>544K</span></div>
+            <div class="hud-stat">FORMAT<span>GLB</span></div>
+          </div>
+        </div>
+
+        <div class="viewer-iframe-wrap">
+          <iframe
+            title="S-BMS Building Management System"
+            allowfullscreen
+            mozallowfullscreen="true"
+            webkitallowfullscreen="true"
+            allow="autoplay; fullscreen; xr-spatial-tracking"
+            src="https://sketchfab.com/models/03441b0bf7774a3d84171ae3893cb68f/embed?autostart=1&ui_theme=dark&ui_color=e8730a&ui_infos=0&ui_watermark=0&ui_ar=1&camera=0">
+          </iframe>
+          <div class="scanline-overlay"></div>
+          <div class="viewer-corner vtl"></div>
+          <div class="viewer-corner vtr"></div>
+          <div class="viewer-corner vbl"></div>
+          <div class="viewer-corner vbr"></div>
+        </div>
+
+        <div class="hud-bottom">
+          <div class="hud-controls">
+            <div class="hud-control-item">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5"><path d="M12 5v14M5 12h14"/></svg>
+              SCROLL TO ZOOM
+            </div>
+            <div class="hud-control-item">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5"><path d="M5 9l-3 3 3 3M9 5l3-3 3 3M15 19l-3 3-3-3M19 9l3 3-3 3"/></svg>
+              DRAG TO ROTATE
+            </div>
+            <div class="hud-control-item">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+              RIGHT CLICK TO PAN
+            </div>
+          </div>
+          <div class="hud-status">
+            <div class="status-dot"></div>
+            STREAM ACTIVE · 60 FPS
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="sidebar">
+
+      <div class="spec-card">
+        <div class="spec-card-title">// UNIT SPECS</div>
+
+        <div class="spec-row">
+          <div class="spec-key">Product</div>
+          <div class="spec-val highlight">S-BMS</div>
+        </div>
+        <div class="spec-row">
+          <div class="spec-key">Protocol</div>
+          <div class="spec-val">BACnet IP</div>
+        </div>
+        <div class="spec-row">
+          <div class="spec-key">DIN Rail</div>
+          <div class="spec-val">35mm</div>
+        </div>
+        <div class="spec-row">
+          <div class="spec-key">Supply</div>
+          <div class="spec-val">24V AC/DC</div>
+        </div>
+        <div class="spec-row">
+          <div class="spec-key">Origin</div>
+          <div class="spec-val highlight">🇩🇪 Germany</div>
+        </div>
+
+        <div style="margin-top: 20px;">
+          <div class="spec-progress-wrap">
+            <div class="spec-progress-label">
+              <span>Integration</span>
+              <span class="pct-integration">0%</span>
+            </div>
+            <div class="spec-progress-bar">
+              <div class="spec-progress-fill" id="bar-integration" style="width:0%"></div>
+            </div>
+          </div>
+
+          <div class="spec-progress-wrap" style="margin-top:14px;">
+            <div class="spec-progress-label">
+              <span>Reliability</span>
+              <span class="pct-reliability">0%</span>
+            </div>
+            <div class="spec-progress-bar">
+              <div class="spec-progress-fill" id="bar-reliability" style="width:0%"></div>
+            </div>
+          </div>
+
+          <div class="spec-progress-wrap" style="margin-top:14px;">
+            <div class="spec-progress-label">
+              <span>Energy Save</span>
+              <span class="pct-energy">0%</span>
+            </div>
+            <div class="spec-progress-bar">
+              <div class="spec-progress-fill" id="bar-energy" style="width:0%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="data-feed">
+        <div class="data-feed-title">// LIVE TELEMETRY</div>
+        <div id="data-feed-list"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="explorer-cta">
+    <a href="#contact" class="cta-btn-primary">
+      Request a Demo
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+    <a href="#products" class="cta-btn-ghost">
+      View All Products
+    </a>
+    <div class="cta-note">Model: <span>S-BMS v2.4</span> · Powered by Kieback&Peter</div>
+  </div>
+
+</section>
 <section id="services">
   <!DOCTYPE html>
 <html lang="en">
@@ -1372,4 +1669,84 @@ document.querySelectorAll('.stat-num[data-target]').forEach(el=>{const raw=el.da
 const reveals=document.querySelectorAll('.reveal');
 const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:0.15});
 reveals.forEach(r=>observer.observe(r));
+
+/* ─── قسم مستكشف الـ 3D المدمج ─── */
+// ─── تحريك أشرطة التقدم وتصاعد الأرقام عند التمرير للقسم ───
+  const bmsBars = [
+    { fill: 'bar-integration', pct: document.querySelector('.pct-integration'), target: 98 },
+    { fill: 'bar-reliability', pct: document.querySelector('.pct-reliability'), target: 99 },
+    { fill: 'bar-energy',      pct: document.querySelector('.pct-energy'),      target: 40 },
+  ];
+
+  let bmsAnimated = false;
+  const bmsSection = document.getElementById('model-explorer');
+
+  const bmsObserver = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting && !bmsAnimated) {
+      bmsAnimated = true;
+      bmsBars.forEach(b => {
+        const fill = document.getElementById(b.fill);
+        if(fill) {
+          setTimeout(() => {
+            fill.style.width = b.target + '%';
+            let cur = 0;
+            const step = b.target / 60;
+            const iv = setInterval(() => {
+              cur = Math.min(cur + step, b.target);
+              if(b.pct) b.pct.textContent = Math.round(cur) + '%';
+              if (cur >= b.target) clearInterval(iv);
+            }, 16);
+          }, 400);
+        }
+      });
+    }
+  }, { threshold: 0.3 });
+
+  if(bmsSection) bmsObserver.observe(bmsSection);
+
+  // ─── محاكاة البث المباشر للبيانات الفنية ───
+  const feedEl = document.getElementById('data-feed-list');
+
+  const feedData = [
+    { key: 'HVAC_ZONE_A', val: '22.4°C', status: 'ok' },
+    { key: 'CO2_LEVEL',   val: '412ppm', status: 'ok' },
+    { key: 'AHU_01',      val: 'RUNNING', status: 'ok' },
+    { key: 'HUMIDITY',    val: '54%',    status: 'ok' },
+    { key: 'PWR_DRAW',    val: '3.2kW',   status: 'warn' },
+    { key: 'CHILLER_IN',  val: '7.1°C',   status: 'ok' },
+    { key: 'VAV_FLOW',    val: '820 cfm', status: 'ok' },
+    { key: 'ALARM_Q',     val: '0 active',status: 'ok' },
+  ];
+
+  function getTelemetryTime() {
+    const now = new Date();
+    return now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  }
+
+  function renderFeed() {
+    if(!feedEl) return;
+    feedEl.innerHTML = feedData.map(d => `
+      <div class="data-line">
+        <span class="data-time">${getTelemetryTime()}</span>
+        <span class="data-text">${d.key}</span>
+        <span class="data-val ${d.status}">${d.val}</span>
+      </div>
+    `).join('');
+  }
+
+  function tickFeed() {
+    if(!feedData.length) return;
+    feedData[0].val = (22 + Math.random() * 0.8).toFixed(1) + '°C';
+    feedData[1].val = (400 + Math.floor(Math.random() * 30)) + 'ppm';
+    feedData[3].val = (50 + Math.floor(Math.random() * 10)) + '%';
+    feedData[4].val = (3.0 + Math.random() * 0.5).toFixed(1) + 'kW';
+    feedData[5].val = (6.8 + Math.random() * 0.6).toFixed(1) + '°C';
+    feedData[6].val = (800 + Math.floor(Math.random() * 50)) + ' cfm';
+    renderFeed();
+  }
+
+  renderFeed();
+  setInterval(tickFeed, 2000);
 </script>
+
+
