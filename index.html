@@ -320,38 +320,12 @@
     pointer-events: none; z-index: 2;
   }
 
-/* القسم الرئيسي الشامل - جعلناه نسبياً ليرتكز عليه الأقواس الكبرى */
-#model-explorer {
-  position: relative;
-  padding: 120px 8%; /* مسافة داخلية تضمن بقاء العناصر داخل الأقواس */
-  background: #030811;
-  border-top: 1px solid rgba(232,115,10,0.1);
-  border-bottom: 1px solid rgba(232,115,10,0.1);
-  overflow: hidden;
-}
+  .viewer-corner { position: absolute; width: 20px; height: 20px; z-index: 3; pointer-events: none; }
+  .viewer-corner.vtl { top: 0; left: 0; border-top: 2px solid var(--orange); border-left: 2px solid var(--orange); }
+  .viewer-corner.vtr { top: 0; right: 0; border-top: 2px solid var(--orange); border-right: 2px solid var(--orange); }
+  .viewer-corner.vbl { bottom: 0; left: 0; border-bottom: 2px solid var(--orange); border-left: 2px solid var(--orange); }
+  .viewer-corner.vbr { bottom: 0; right: 0; border-bottom: 2px solid var(--orange); border-right: 2px solid var(--orange); }
 
-/* الأقواس الخارجية الكبرى التي أشرت إليها بالأسهم الحمراء */
-.main-section-corner {
-  position: absolute;
-  width: 24px;       /* حجم القوس */
-  height: 24px;      /* حجم القوس */
-  border: 2px solid var(--orange);
-  z-index: 99;
-  pointer-events: none;
-}
-
-/* توزيع الأقواس على الزوايا الخارجية الكبرى للقسم بالكامل */
-.main-section-corner.top-left     { top: 40px; left: 40px; border-right: 0; border-bottom: 0; }
-.main-section-corner.top-right    { top: 40px; right: 40px; border-left: 0; border-bottom: 0; }
-.main-section-corner.bottom-left  { bottom: 40px; left: 40px; border-right: 0; border-top: 0; }
-.main-section-corner.bottom-right { bottom: 40px; right: 40px; border-left: 0; border-top: 0; }
-
-/* إزالة أي حدود قديمة كانت تضيق على الـ Viewer */
-.viewer-hud {
-  position: relative;
-  background: rgba(6,14,26,0.8);
-  border: 1px solid rgba(255,255,255,0.05);
-}
   .hud-bottom { display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; border-top: 1px solid rgba(232,115,10,0.15); background: rgba(15,32,64,0.5); }
   .hud-controls { display: flex; align-items: center; gap: 24px; }
   .hud-control-item { display: flex; align-items: center; gap: 8px; font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--gray); }
@@ -937,7 +911,7 @@ body { background:var(--ink); color:var(--text); font-family:'Barlow',sans-serif
     </div>
   </div>
 </section>
-
+  
 <section id="model-explorer" class="reveal">
 
   <div class="corner-accent tl"></div>
@@ -989,61 +963,13 @@ body { background:var(--ink); color:var(--text); font-family:'Barlow',sans-serif
             allow="autoplay; fullscreen; xr-spatial-tracking"
             src="https://sketchfab.com/models/03441b0bf7774a3d84171ae3893cb68f/embed?autostart=1&ui_theme=dark&ui_color=e8730a&ui_infos=0&ui_watermark=0&ui_ar=1&camera=0">
           </iframe>
-          <section id="model-explorer" class="reveal">
-  
-  <div class="main-section-corner top-left"></div>
-  <div class="main-section-corner top-right"></div>
-  <div class="main-section-corner bottom-left"></div>
-  <div class="main-section-corner bottom-right"></div>
-
-  <div class="explorer-header">
-    <div class="header-left">
-      <div class="section-label">Interactive 3D</div>
-      <h2 class="section-title">Explore the BMS<br><span>in Full Detail</span></h2>
-    </div>
-    <div class="header-right" style="max-width: 500px; text-align: left;">
-      <p style="color: var(--gray); font-size: 15px; line-height: 1.6;">Rotate, zoom, and inspect the S-BMS hardware — every connector, module, and component in interactive 3D. Built to precision.</p>
-      <div class="model-badge" style="margin-top: 10px;">
-        <div class="model-badge-dot"></div>
-        Live 3D · AR Ready
-      </div>
-    </div>
-  </div>
-
-  <div class="explorer-layout">
-    <div class="viewer-wrapper">
-      <div class="viewer-hud">
-        <div class="hud-bar">
-          <div class="hud-title">S-BMS // 3D MODEL VIEWER v2.4</div>
-          <div style="font-family: monospace; color: var(--gray);">FORMAT: GLB</div>
-        </div>
-        <div class="viewer-iframe-wrap">
-          <iframe src="https://my.spline.design/productviewercopy-2045610057df786733230a113ec44275/"></iframe>
           <div class="scanline-overlay"></div>
+          <div class="viewer-corner vtl"></div>
+          <div class="viewer-corner vtr"></div>
+          <div class="viewer-corner vbl"></div>
+          <div class="viewer-corner vbr"></div>
         </div>
-      </div>
-    </div>
 
-    <div class="sidebar">
-      <div class="spec-card">
-        <div class="spec-card-title">// UNIT SPECS</div>
-        <div class="spec-row"><div class="spec-key">Product</div><div class="spec-val highlight">S-BMS</div></div>
-        <div class="spec-row"><div class="spec-key">Protocol</div><div class="spec-val">BACnet IP</div></div>
-        <div class="spec-row"><div class="spec-key">Origin</div><div class="spec-val highlight">🇩🇪 Germany</div></div>
-      </div>
-      <div class="data-feed">
-        <div class="data-feed-title">// LIVE TELEMETRY</div>
-        <div id="data-feed-list"></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="explorer-cta">
-    <a href="#contact" class="cta-btn-primary">Request a Demo</a>
-    <div class="cta-note">Model: <span>S-BMS v2.4</span></div>
-  </div>
-
-</section>
         <div class="hud-bottom">
           <div class="hud-controls">
             <div class="hud-control-item">
@@ -1140,7 +1066,9 @@ body { background:var(--ink); color:var(--text); font-family:'Barlow',sans-serif
       Request a Demo
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
     </a>
-
+    <a href="#products" class="cta-btn-ghost">
+      View All Products
+    </a>
     <div class="cta-note">Model: <span>S-BMS v2.4</span> · Powered by Kieback&Peter</div>
   </div>
 
