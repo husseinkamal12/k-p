@@ -527,6 +527,8 @@
     .hud-controls, .corner-accent { display: none; }
   }
 </style>
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+
 </head>
 <body>
 
@@ -568,7 +570,19 @@
 
   </div>
   
-    
+    <div class="viewer-iframe-wrap">
+  <model-viewer 
+    src="models/bms-controller.glb" 
+    alt="BMS Controller 3D Model" 
+    auto-rotate 
+    camera-controls 
+    shadow-intensity="1" 
+    exposure="1.2"
+    interaction-prompt="auto">
+  </model-viewer>
+  
+  <div class="scanline-overlay"></div>
+</div>
   
 </section>
 
@@ -955,14 +969,24 @@ body { background:var(--ink); color:var(--text); font-family:'Barlow',sans-serif
         </div>
 
         <div class="viewer-iframe-wrap">
-          <iframe
-            title="S-BMS Building Management System"
-            allowfullscreen
-            mozallowfullscreen="true"
-            webkitallowfullscreen="true"
-            allow="autoplay; fullscreen; xr-spatial-tracking"
-            src="https://sketchfab.com/models/03441b0bf7774a3d84171ae3893cb68f/embed?autostart=1&ui_theme=dark&ui_color=e8730a&ui_infos=0&ui_watermark=0&ui_ar=1&camera=0">
-          </iframe>
+          <model-viewer
+            src="panel.glb"
+            alt="S-BMS Building Management System"
+            auto-rotate
+            auto-rotate-delay="0"
+            rotation-per-second="20deg"
+            camera-controls
+            shadow-intensity="1.2"
+            shadow-softness="0.8"
+            exposure="1.1"
+            environment-image="neutral"
+            ar
+            ar-modes="webxr scene-viewer quick-look"
+            style="width:100%;height:100%;background:transparent;">
+          </model-viewer>
+          <div class="scanline-overlay"></div>
+          <div class="viewer-corner vtl"></div>
+          ...
           <div class="scanline-overlay"></div>
           <div class="viewer-corner vtl"></div>
           <div class="viewer-corner vtr"></div>
