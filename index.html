@@ -294,7 +294,7 @@
 
   @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.7); } }
 
-  .explorer-layout { display: grid; grid-template-columns: 1fr 280px; gap: 24px; position: relative; z-index: 2; }
+  .explorer-layout { display: grid; grid-template-columns: 1fr; gap: 24px; position: relative; z-index: 2; }
   .viewer-wrapper { position: relative; }
   .viewer-hud { position: relative; background: rgba(6,14,26,0.8); border: 1px solid rgba(232,115,10,0.2); }
   
@@ -430,7 +430,7 @@
 
   @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.7); } }
 
-  .explorer-layout { display: grid; grid-template-columns: 1fr 280px; gap: 24px; position: relative; z-index: 2; }
+  .explorer-layout { display: grid; grid-template-columns: 1fr; gap: 24px; position: relative; z-index: 2; }
   .viewer-wrapper { position: relative; }
   .viewer-hud { position: relative; background: rgba(6,14,26,0.8); border: 1px solid rgba(232,115,10,0.2); }
   
@@ -1026,71 +1026,7 @@ body { background:var(--ink); color:var(--text); font-family:'Barlow',sans-serif
       </div>
     </div>
 
-    <div class="sidebar">
 
-      <div class="spec-card">
-        <div class="spec-card-title">// UNIT SPECS</div>
-
-        <div class="spec-row">
-          <div class="spec-key">Product</div>
-          <div class="spec-val highlight">S-BMS</div>
-        </div>
-        <div class="spec-row">
-          <div class="spec-key">Protocol</div>
-          <div class="spec-val">BACnet IP</div>
-        </div>
-        <div class="spec-row">
-          <div class="spec-key">DIN Rail</div>
-          <div class="spec-val">35mm</div>
-        </div>
-        <div class="spec-row">
-          <div class="spec-key">Supply</div>
-          <div class="spec-val">24V AC/DC</div>
-        </div>
-        <div class="spec-row">
-          <div class="spec-key">Origin</div>
-          <div class="spec-val highlight">🇩🇪 Germany</div>
-        </div>
-
-        <div style="margin-top: 20px;">
-          <div class="spec-progress-wrap">
-            <div class="spec-progress-label">
-              <span>Integration</span>
-              <span class="pct-integration">0%</span>
-            </div>
-            <div class="spec-progress-bar">
-              <div class="spec-progress-fill" id="bar-integration" style="width:0%"></div>
-            </div>
-          </div>
-
-          <div class="spec-progress-wrap" style="margin-top:14px;">
-            <div class="spec-progress-label">
-              <span>Reliability</span>
-              <span class="pct-reliability">0%</span>
-            </div>
-            <div class="spec-progress-bar">
-              <div class="spec-progress-fill" id="bar-reliability" style="width:0%"></div>
-            </div>
-          </div>
-
-          <div class="spec-progress-wrap" style="margin-top:14px;">
-            <div class="spec-progress-label">
-              <span>Energy Save</span>
-              <span class="pct-energy">0%</span>
-            </div>
-            <div class="spec-progress-bar">
-              <div class="spec-progress-fill" id="bar-energy" style="width:0%"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="data-feed">
-        <div class="data-feed-title">// LIVE TELEMETRY</div>
-        <div id="data-feed-list"></div>
-      </div>
-
-    </div>
   </div>
 
   <div class="explorer-cta">
@@ -1703,82 +1639,7 @@ const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isInte
 reveals.forEach(r=>observer.observe(r));
 
 
-// ─── تحريك أشرطة التقدم وتصاعد الأرقام عند التمرير للقسم ───
-  const bmsBars = [
-    { fill: 'bar-integration', pct: document.querySelector('.pct-integration'), target: 98 },
-    { fill: 'bar-reliability', pct: document.querySelector('.pct-reliability'), target: 99 },
-    { fill: 'bar-energy',      pct: document.querySelector('.pct-energy'),      target: 40 },
-  ];
 
-  let bmsAnimated = false;
-  const bmsSection = document.getElementById('model-explorer');
-
-  const bmsObserver = new IntersectionObserver(entries => {
-    if (entries[0].isIntersecting && !bmsAnimated) {
-      bmsAnimated = true;
-      bmsBars.forEach(b => {
-        const fill = document.getElementById(b.fill);
-        if(fill) {
-          setTimeout(() => {
-            fill.style.width = b.target + '%';
-            let cur = 0;
-            const step = b.target / 60;
-            const iv = setInterval(() => {
-              cur = Math.min(cur + step, b.target);
-              if(b.pct) b.pct.textContent = Math.round(cur) + '%';
-              if (cur >= b.target) clearInterval(iv);
-            }, 16);
-          }, 400);
-        }
-      });
-    }
-  }, { threshold: 0.3 });
-
-  if(bmsSection) bmsObserver.observe(bmsSection);
-
-  // ─── محاكاة البث المباشر للبيانات الفنية ───
-  const feedEl = document.getElementById('data-feed-list');
-
-  const feedData = [
-    { key: 'HVAC_ZONE_A', val: '22.4°C', status: 'ok' },
-    { key: 'CO2_LEVEL',   val: '412ppm', status: 'ok' },
-    { key: 'AHU_01',      val: 'RUNNING', status: 'ok' },
-    { key: 'HUMIDITY',    val: '54%',    status: 'ok' },
-    { key: 'PWR_DRAW',    val: '3.2kW',   status: 'warn' },
-    { key: 'CHILLER_IN',  val: '7.1°C',   status: 'ok' },
-    { key: 'VAV_FLOW',    val: '820 cfm', status: 'ok' },
-    { key: 'ALARM_Q',     val: '0 active',status: 'ok' },
-  ];
-
-  function getTelemetryTime() {
-    const now = new Date();
-    return now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-  }
-
-  function renderFeed() {
-    if(!feedEl) return;
-    feedEl.innerHTML = feedData.map(d => `
-      <div class="data-line">
-        <span class="data-time">${getTelemetryTime()}</span>
-        <span class="data-text">${d.key}</span>
-        <span class="data-val ${d.status}">${d.val}</span>
-      </div>
-    `).join('');
-  }
-
-  function tickFeed() {
-    if(!feedData.length) return;
-    feedData[0].val = (22 + Math.random() * 0.8).toFixed(1) + '°C';
-    feedData[1].val = (400 + Math.floor(Math.random() * 30)) + 'ppm';
-    feedData[3].val = (50 + Math.floor(Math.random() * 10)) + '%';
-    feedData[4].val = (3.0 + Math.random() * 0.5).toFixed(1) + 'kW';
-    feedData[5].val = (6.8 + Math.random() * 0.6).toFixed(1) + '°C';
-    feedData[6].val = (800 + Math.floor(Math.random() * 50)) + ' cfm';
-    renderFeed();
-  }
-
-  renderFeed();
-  setInterval(tickFeed, 2000);
 </script>
 
 
