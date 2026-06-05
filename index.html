@@ -1560,6 +1560,14 @@ const PRODUCTS = [
     if (!p) return;
 
     // populate
+    // 💡 أضف هذا الجزء هنا ليقوم بتبديل الصورة تلقائياً حسب المنتج الذي تم الضغط عليه
+const modalImg = document.getElementById('pm-image');
+if (modalImg && p.image) {
+    modalImg.src = p.image;
+    modalImg.style.display = 'block'; // إظهار الصورة
+} else if (modalImg) {
+    modalImg.style.display = 'none';  // إخفاء الصورة للمنتجات التي ليس لها صورة بعد
+}
     document.getElementById('pm-id').textContent     = 'PRODUCT — ' + p.id;
     document.getElementById('pm-badge').textContent   = p.badge;
     document.getElementById('pm-name').textContent    = p.name;
