@@ -1369,7 +1369,6 @@ body { background:var(--ink); color:var(--text); font-family:'Barlow',sans-serif
 </section>
 
 <script>
-<script>
 // ════════════ PRODUCT DATA ════════════
 const PRODUCTS = [
   {
@@ -1379,14 +1378,11 @@ const PRODUCTS = [
     name: 'BMS System',
     tagline: 'An award-winning integrated platform combining building control and energy management. Winner of the German Design Award 2018.',
     iconSvg: `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line><path d="M6 8h10M6 12h5"></path></svg>`,
-    
-    // ✅ تم تعديل مسار الصورة ليكون صحيحاً (اسم المجلد يبدأ بحرف كبير Protocol)
-    image: './Protocol/DDC4020e.webp', 
-    
+    image: './Protocol/DDC4020e.webp',
     specs: [
       { k: 'Protocol',      v: 'BACnet / KNX / LON' },
-      { k: 'Architecture',  v: 'Supervisor Level',     hi: true },
-      { k: 'Origin',        v: 'Germany',              hi: true },
+      { k: 'Architecture',  v: 'Supervisor Level',    hi: true },
+      { k: 'Origin',        v: 'Germany',             hi: true },
       { k: 'Award',         v: 'German Design 2018'  },
       { k: 'Integration',   v: 'Cloud / Edge Ready'  },
     ],
@@ -1405,7 +1401,6 @@ const PRODUCTS = [
     name: 'Advanced Automation Stations',
     tagline: 'High-performance BACnet automation stations controlling 4–12 DDC sub-systems with a massive 100,000 data point memory.',
     iconSvg: `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="M6 8h2v2H6zm0 4h2v2H6zm6-4h6v2h-6zm0 4h4v2h-4zM6 16h12v2H6z"></path></svg>`,
-    image: '', // يمكنك إضافة صورة لهذا المنتج مستقبلاً بنفس الطريقة
     specs: [
       { k: 'Protocol',     v: 'BACnet MS/TP & IP' },
       { k: 'Memory',       v: '100,000 Data Points', hi: true },
@@ -1428,7 +1423,6 @@ const PRODUCTS = [
     name: 'Controllers & Thermostats',
     tagline: 'LCD touch display thermostats with ±0.5°C precision, RS485 Modbus connectivity, and flexible sensor configurations.',
     iconSvg: `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6h-6zM4 14h6v6H4zM4 4h6v6H4zM19 14v6M16 17h6"></path></svg>`,
-    image: '',
     specs: [
       { k: 'Accuracy',      v: '±0.5°C',        hi: true },
       { k: 'Display',       v: 'Large LCD Touch' },
@@ -1451,7 +1445,6 @@ const PRODUCTS = [
     name: 'Dual VAV Controllers',
     tagline: 'BACnet MS/TP controllers for variable air volume systems with integrated flow sensors and 4.5 Nm torque actuator built in.',
     iconSvg: `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"></path></svg>`,
-    image: '',
     specs: [
       { k: 'Protocol',   v: 'BACnet MS/TP',    hi: true },
       { k: 'Actuator',   v: '4.5 Nm Torque',   hi: true },
@@ -1474,7 +1467,6 @@ const PRODUCTS = [
     name: 'CO₂ Sensor',
     tagline: 'Infrared CO₂ sensor with 0–10000 ppm range, ±40 ppm accuracy, and IP6x industrial-grade protection for demanding environments.',
     iconSvg: `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path><path d="M2 12h20"></path></svg>`,
-    image: '',
     specs: [
       { k: 'Technology',  v: 'Infrared (NDIR)',   hi: true },
       { k: 'Range',       v: '0 – 10,000 ppm',   hi: true },
@@ -1484,7 +1476,7 @@ const PRODUCTS = [
     ],
     metrics: [
       { label: 'Detection Range',  val: '10K ppm', pct: 94 },
-      { label: 'Accuracy',          val: '±40ppm', pct: 92 },
+      { label: 'Accuracy',         val: '±40ppm', pct: 92 },
       { label: 'Response Time',    val: '<30s', pct: 88 },
       { label: 'IP Protection',    val: 'IP6x', pct: 96 },
     ],
@@ -1497,7 +1489,6 @@ const PRODUCTS = [
     name: 'Ultrasonic Water Meters',
     tagline: 'No moving parts, long-term high accuracy, dirt-resistant design with IP68 rating, supporting NB-IoT and LoRaWAN wireless connectivity.',
     iconSvg: `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path><path d="M12 6v6l4 2"></path></svg>`,
-    image: '',
     specs: [
       { k: 'Technology',  v: 'Ultrasonic',      hi: true },
       { k: 'Protection',  v: 'IP68',            hi: true },
@@ -1520,7 +1511,6 @@ const PRODUCTS = [
     name: 'Carbon Monoxide Sensor',
     tagline: 'Instant CO detection for parking structures and confined spaces. Response time ≤15s with a 5+ year certified service lifespan.',
     iconSvg: `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>`,
-    image: '',
     specs: [
       { k: 'Gas Type',      v: 'Carbon Monoxide',  hi: true },
       { k: 'Response Time', v: '≤ 15 seconds',     hi: true },
@@ -1543,7 +1533,6 @@ const PRODUCTS = [
     name: 'Three-Phase Energy Meter',
     tagline: 'Class 0.5s high-precision three-phase energy measurement with Modbus RTU communication and harmonic analysis up to the 31st order.',
     iconSvg: `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>`,
-    image: '',
     specs: [
       { k: 'Accuracy Class',  v: 'Class 0.5s',      hi: true },
       { k: 'Harmonics',       v: 'Up to 31st Order', hi: true },
@@ -1560,138 +1549,6 @@ const PRODUCTS = [
     features: ['Class 0.5s', 'Modbus RTU', '3-Phase', 'Harmonics', 'DIN Rail', 'Multi-tariff'],
   },
 ];
-
-// ════════════ MODAL LOGIC ════════════
-(function() {
-  const overlay  = document.getElementById('prod-modal-overlay');
-  const closeBtn = document.getElementById('pm-close');
-
-  function openProduct(idx) {
-    const p = PRODUCTS[idx];
-    if (!p) return;
-
-    // populate text data
-    document.getElementById('pm-id').textContent     = 'PRODUCT — ' + p.id;
-    document.getElementById('pm-badge').textContent   = p.badge;
-    document.getElementById('pm-name').textContent    = p.name;
-    document.getElementById('pm-tagline').textContent = p.tagline;
-    document.getElementById('pm-3d-code').textContent = p.code;
-    document.getElementById('pm-3d-icon').innerHTML   = p.iconSvg;
-
-    // 💡 خطوة سحرية: نقوم بإنشاء عنصر صورة داخل الـ 3D Scene أو تبديله إذا كان للمنتج صورة
-    const scene = document.getElementById('pm-3d-scene');
-    
-    // نحذف أي صورة قديمة مضافة مسبقاً لمنع التكرار
-    const oldImg = document.getElementById('dynamic-prod-img');
-    if (oldImg) oldImg.remove();
-    
-    if (p.image) {
-      // إذا كان المنتج يحتوي على مسار صورة، نقوم بإنشائها ووضعها داخل الصندوق ثلاثي الأبعاد بدلاً من الأيقونة
-      const imgEl = document.createElement('img');
-      imgEl.id = 'dynamic-prod-img';
-      imgEl.src = p.image;
-      imgEl.style.width = '100%';
-      imgEl.style.height = '100%';
-      imgEl.style.objectFit = 'contain';
-      imgEl.style.position = 'absolute';
-      imgEl.style.top = '0';
-      imgEl.style.left = '0';
-      scene.appendChild(imgEl);
-    }
-
-    // timestamp
-    const now = new Date();
-    document.getElementById('pm-timestamp').textContent =
-      'REF: ' + p.id + ' — ' + now.toISOString().slice(0,19).replace('T',' ');
-
-    // specs
-    const specsEl = document.getElementById('pm-specs');
-    specsEl.innerHTML = p.specs.map(s => `
-      <div class="pm-spec-row">
-        <span class="pm-spec-key">${s.k}</span>
-        <span class="pm-spec-val${s.hi ? ' orange' : ''}">${s.v}</span>
-      </div>
-    `).join('');
-
-    // metrics
-    const metricsEl = document.getElementById('pm-metrics');
-    metricsEl.innerHTML = p.metrics.map(m => `
-      <div class="pm-metric">
-        <div class="pm-metric-label">
-          <span>${m.label}</span><span>${m.val}</span>
-        </div>
-        <div class="pm-metric-bar">
-          <div class="pm-metric-fill" data-pct="${m.pct}" style="width:0%"></div>
-        </div>
-      </div>
-    `).join('');
-
-    // features
-    const featEl = document.getElementById('pm-features');
-    featEl.innerHTML = p.features.map(f => `<span class="pm-feature">${f}</span>`).join('');
-
-    // open
-    overlay.classList.add('active');
-    document.body.style.overflow = 'hidden';
-
-    // animate bars after a tick
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        document.querySelectorAll('.pm-metric-fill').forEach(bar => {
-          bar.style.width = bar.dataset.pct + '%';
-        });
-      }, 60);
-    });
-
-    // reset 3D animation
-    scene.style.animation = 'none';
-    void scene.offsetWidth; // reflow
-    scene.style.animation = '';
-  }
-
-  function closeModal() {
-    overlay.classList.remove('active');
-    document.body.style.overflow = '';
-    // مسح الصورة عند إغلاق النافذة
-    const oldImg = document.getElementById('dynamic-prod-img');
-    if (oldImg) oldImg.remove();
-  }
-
-  // attach to cards
-  document.querySelectorAll('.product-card[data-product]').forEach(card => {
-    card.addEventListener('click', () => openProduct(+card.dataset.product));
-  });
-
-  closeBtn.addEventListener('click', closeModal);
-  overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
-
-  // drag-to-rotate 3D scene
-  const scene = document.getElementById('pm-3d-scene');
-  let dragging = false, lastX = 0, lastY = 0, rotX = 10, rotY = 0;
-  scene.addEventListener('mousedown', e => { dragging = true; lastX = e.clientX; lastY = e.clientY; scene.style.animationPlayState = 'paused'; });
-  document.addEventListener('mousemove', e => {
-    if (!dragging) return;
-    rotY += (e.clientX - lastX) * 0.6;
-    rotX -= (e.clientY - lastY) * 0.3;
-    rotX = Math.max(-40, Math.min(40, rotX));
-    scene.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
-    lastX = e.clientX; lastY = e.clientY;
-  });
-  document.addEventListener('mouseup', () => { dragging = false; });
-
-  // touch support
-  scene.addEventListener('touchstart', e => { dragging = true; lastX = e.touches[0].clientX; lastY = e.touches[0].clientY; scene.style.animationPlayState = 'paused'; });
-  scene.addEventListener('touchmove', e => {
-    if (!dragging) return;
-    rotY += (e.touches[0].clientX - lastX) * 0.6;
-    rotX -= (e.touches[0].clientY - lastY) * 0.3;
-    scene.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
-    lastX = e.touches[0].clientX; lastY = e.touches[0].clientY;
-  });
-  document.addEventListener('touchend', () => { dragging = false; });
-})();
-</script>
 
 // ════════════ MODAL LOGIC ════════════
 (function() {
