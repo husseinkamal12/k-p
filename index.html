@@ -864,6 +864,431 @@ body { background:var(--ink); color:var(--text); font-family:'Barlow',sans-serif
 </html>
 
 
+<!-- ════════════════════════════════════════
+     PRODUCT DETAIL MODAL (3D VIEWER)
+════════════════════════════════════════ -->
+<style>
+/* ── Product card click hint ── */
+.product-card {
+  cursor: pointer;
+}
+.product-card .prod-click-hint {
+  display: flex; align-items: center; gap: 6px;
+  margin-top: 18px;
+  font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--orange); opacity: 0;
+  transition: opacity 0.3s;
+}
+.product-card:hover .prod-click-hint { opacity: 1; }
+.product-card .prod-click-hint svg { width: 12px; height: 12px; }
+
+/* ── Modal Overlay ── */
+#prod-modal-overlay {
+  position: fixed; inset: 0; z-index: 9000;
+  background: rgba(4, 10, 20, 0.85);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+#prod-modal-overlay.active {
+  opacity: 1; pointer-events: all;
+}
+
+/* ── Modal Panel ── */
+.prod-modal {
+  width: 100%; max-width: 1060px;
+  background: linear-gradient(145deg, rgba(12,26,52,0.98) 0%, rgba(6,14,26,0.99) 100%);
+  border: 1px solid rgba(232,115,10,0.25);
+  box-shadow:
+    0 0 0 1px rgba(232,115,10,0.05),
+    0 40px 80px rgba(0,0,0,0.6),
+    0 0 120px rgba(232,115,10,0.06),
+    inset 0 1px 0 rgba(255,255,255,0.04);
+  position: relative;
+  transform: perspective(1200px) rotateX(6deg) translateY(40px) scale(0.94);
+  opacity: 0;
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+              opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  overflow: hidden;
+}
+#prod-modal-overlay.active .prod-modal {
+  transform: perspective(1200px) rotateX(0deg) translateY(0) scale(1);
+  opacity: 1;
+}
+
+/* scan line texture */
+.prod-modal::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 2px,
+    rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px
+  );
+  pointer-events: none; z-index: 0;
+}
+
+/* corner brackets */
+.pm-corner { position: absolute; width: 22px; height: 22px; z-index: 4; }
+.pm-corner.tl { top: 0; left: 0; border-top: 2px solid var(--orange); border-left: 2px solid var(--orange); }
+.pm-corner.tr { top: 0; right: 0; border-top: 2px solid var(--orange); border-right: 2px solid var(--orange); }
+.pm-corner.bl { bottom: 0; left: 0; border-bottom: 2px solid var(--orange); border-left: 2px solid var(--orange); }
+.pm-corner.br { bottom: 0; right: 0; border-bottom: 2px solid var(--orange); border-right: 2px solid var(--orange); }
+
+/* top bar */
+.pm-topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 28px;
+  border-bottom: 1px solid rgba(232,115,10,0.12);
+  background: rgba(6,14,26,0.6);
+  position: relative; z-index: 2;
+}
+.pm-topbar-left { display: flex; align-items: center; gap: 16px; }
+.pm-topbar-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--orange); box-shadow: 0 0 8px rgba(232,115,10,0.8); animation: pulse 2s ease-in-out infinite; }
+.pm-topbar-id { font-family: 'Share Tech Mono', 'Courier New', monospace; font-size: 10px; color: var(--orange); letter-spacing: 3px; text-transform: uppercase; }
+.pm-close {
+  width: 34px; height: 34px; border: 1px solid rgba(232,115,10,0.25);
+  background: transparent; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s; color: var(--gray);
+}
+.pm-close:hover { border-color: var(--orange); color: var(--white); background: rgba(232,115,10,0.1); transform: rotate(90deg); }
+.pm-close svg { width: 14px; height: 14px; }
+
+/* content grid */
+.pm-body {
+  display: grid; grid-template-columns: 1fr 1fr;
+  position: relative; z-index: 1;
+}
+
+/* ── LEFT: 3D Viewer ── */
+.pm-viewer {
+  position: relative;
+  background: radial-gradient(ellipse at 50% 40%, rgba(232,115,10,0.06) 0%, rgba(6,14,26,0) 70%);
+  border-right: 1px solid rgba(232,115,10,0.1);
+  min-height: 420px;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.pm-canvas-wrap {
+  width: 260px; height: 260px;
+  position: relative;
+  perspective: 800px;
+}
+.pm-3d-scene {
+  width: 100%; height: 100%;
+  transform-style: preserve-3d;
+  animation: prod3dSpin 12s linear infinite;
+}
+@keyframes prod3dSpin {
+  0%   { transform: rotateX(10deg) rotateY(0deg); }
+  100% { transform: rotateX(10deg) rotateY(360deg); }
+}
+.pm-3d-scene:hover { animation-play-state: paused; }
+
+.pm-face {
+  position: absolute;
+  backface-visibility: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+/* Main box faces */
+.pm-box {
+  width: 180px; height: 120px;
+  position: absolute;
+  left: 50%; top: 50%;
+  transform-style: preserve-3d;
+  transform: translate(-50%, -50%);
+}
+.pm-box-face {
+  position: absolute;
+  width: 180px; height: 120px;
+  border: 1px solid rgba(232,115,10,0.35);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Share Tech Mono', monospace;
+  backface-visibility: hidden;
+}
+.pm-box-face.front  { transform: translateZ(40px);  background: linear-gradient(135deg, rgba(20,44,80,0.9), rgba(10,24,48,0.95)); }
+.pm-box-face.back   { transform: rotateY(180deg) translateZ(40px); background: rgba(10,24,48,0.8); }
+.pm-box-face.right  { transform: rotateY(90deg) translateZ(90px);  background: rgba(15,32,64,0.8); width: 80px; left: 50px; }
+.pm-box-face.left   { transform: rotateY(-90deg) translateZ(90px); background: rgba(15,32,64,0.7); width: 80px; left: 50px; }
+.pm-box-face.top    { transform: rotateX(90deg) translateZ(60px);  background: rgba(232,115,10,0.07); height: 80px; top: 20px; }
+.pm-box-face.bottom { transform: rotateX(-90deg) translateZ(60px); background: rgba(6,14,26,0.9);   height: 80px; top: 20px; }
+
+.pm-face-icon { opacity: 0.9; }
+.pm-face-grill {
+  display: grid; grid-template-columns: repeat(6,1fr); gap: 3px;
+  width: 80%; opacity: 0.25;
+}
+.pm-face-grill span { height: 3px; background: var(--orange); border-radius: 1px; }
+
+/* floating ring */
+.pm-ring {
+  width: 220px; height: 220px;
+  border: 1px solid rgba(232,115,10,0.15);
+  border-radius: 50%;
+  position: absolute; left: 50%; top: 50%;
+  transform: translate(-50%,-50%) rotateX(70deg);
+  animation: ringRotate 8s linear infinite;
+  pointer-events: none;
+}
+.pm-ring::before {
+  content: ''; position: absolute;
+  width: 8px; height: 8px; background: var(--orange);
+  border-radius: 50%; top: -4px; left: 50%;
+  box-shadow: 0 0 12px rgba(232,115,10,0.8);
+  transform: translateX(-50%);
+}
+.pm-ring2 {
+  width: 260px; height: 260px;
+  border: 1px dashed rgba(232,115,10,0.08);
+  border-radius: 50%;
+  position: absolute; left: 50%; top: 50%;
+  transform: translate(-50%,-50%) rotateX(70deg);
+  animation: ringRotate 14s linear infinite reverse;
+  pointer-events: none;
+}
+@keyframes ringRotate { to { transform: translate(-50%,-50%) rotateX(70deg) rotateZ(360deg); } }
+
+/* viewer HUD labels */
+.pm-viewer-label {
+  position: absolute; font-family: 'Share Tech Mono', monospace;
+  font-size: 9px; color: rgba(232,115,10,0.5); letter-spacing: 2px;
+}
+.pm-viewer-label.top-left  { top: 20px; left: 20px; }
+.pm-viewer-label.bot-right { bottom: 20px; right: 20px; }
+.pm-axes {
+  position: absolute; bottom: 22px; left: 22px;
+  width: 44px; height: 44px;
+  opacity: 0.45;
+}
+
+/* ── RIGHT: Product Info ── */
+.pm-info { padding: 36px 40px; display: flex; flex-direction: column; gap: 0; }
+
+.pm-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(232,115,10,0.1); border: 1px solid rgba(232,115,10,0.25);
+  color: var(--orange); font-size: 10px; letter-spacing: 3px;
+  text-transform: uppercase; padding: 5px 14px;
+  margin-bottom: 18px; align-self: flex-start;
+}
+.pm-product-name {
+  font-family: 'Rajdhani', sans-serif; font-size: 34px; font-weight: 700;
+  line-height: 1.05; color: var(--white); margin-bottom: 8px;
+}
+.pm-tagline {
+  font-size: 13px; color: var(--gray); line-height: 1.7; margin-bottom: 28px;
+  padding-bottom: 28px; border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+/* spec table */
+.pm-specs { display: flex; flex-direction: column; gap: 0; margin-bottom: 28px; }
+.pm-spec-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 11px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.pm-spec-row:first-child { border-top: none; }
+.pm-spec-key {
+  font-size: 10px; color: var(--gray); letter-spacing: 2px; text-transform: uppercase;
+}
+.pm-spec-val {
+  font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--white);
+  text-align: right;
+}
+.pm-spec-val.orange { color: var(--orange); }
+
+/* progress bars */
+.pm-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px; }
+.pm-metric {}
+.pm-metric-label {
+  display: flex; justify-content: space-between;
+  font-size: 10px; margin-bottom: 7px;
+  color: var(--gray); letter-spacing: 1px; text-transform: uppercase;
+}
+.pm-metric-label span:last-child { color: var(--orange); font-family: 'Share Tech Mono', monospace; }
+.pm-metric-bar { height: 2px; background: rgba(255,255,255,0.06); }
+.pm-metric-fill {
+  height: 100%; background: linear-gradient(90deg, var(--orange), var(--dark-orange));
+  position: relative; width: 0;
+  transition: width 1.2s cubic-bezier(0.25, 1, 0.5, 1) 0.2s;
+}
+.pm-metric-fill::after {
+  content: ''; position: absolute; right: -1px; top: 50%;
+  transform: translateY(-50%);
+  width: 5px; height: 5px; background: var(--orange); border-radius: 50%;
+  box-shadow: 0 0 6px rgba(232,115,10,0.8);
+}
+
+/* features chips */
+.pm-features { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
+.pm-feature {
+  font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 5px 12px;
+  border: 1px solid rgba(232,115,10,0.2); color: var(--gray);
+  transition: all 0.2s;
+}
+.pm-feature:hover { border-color: var(--orange); color: var(--white); }
+
+/* CTA */
+.pm-cta { display: flex; gap: 12px; margin-top: auto; }
+.pm-btn-primary {
+  flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 13px 24px; background: var(--orange); color: var(--dark-navy);
+  font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase; text-decoration: none;
+  border: none; cursor: pointer; transition: all 0.3s;
+}
+.pm-btn-primary:hover { background: var(--dark-orange); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(232,115,10,0.3); }
+.pm-btn-ghost {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 13px 20px; border: 1px solid rgba(232,115,10,0.3); color: var(--white);
+  font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase; text-decoration: none;
+  cursor: pointer; background: transparent; transition: all 0.3s;
+}
+.pm-btn-ghost:hover { border-color: var(--orange); background: rgba(232,115,10,0.07); }
+
+/* bottom status bar */
+.pm-statusbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 28px;
+  border-top: 1px solid rgba(232,115,10,0.1);
+  background: rgba(6,14,26,0.5);
+  position: relative; z-index: 2;
+}
+.pm-status-left { display: flex; align-items: center; gap: 6px; font-family: 'Share Tech Mono', monospace; font-size: 9px; color: #28CA41; }
+.pm-status-dot { width: 5px; height: 5px; background: #28CA41; border-radius: 50%; animation: pulse 2s ease-in-out infinite; }
+.pm-status-right { font-family: 'Share Tech Mono', monospace; font-size: 9px; color: rgba(232,115,10,0.4); letter-spacing: 2px; }
+
+@media (max-width: 768px) {
+  .pm-body { grid-template-columns: 1fr; }
+  .pm-viewer { min-height: 260px; border-right: none; border-bottom: 1px solid rgba(232,115,10,0.1); }
+  .pm-info { padding: 24px 22px; }
+  .pm-product-name { font-size: 26px; }
+  .pm-metrics { grid-template-columns: 1fr; }
+  .prod-modal { max-height: 90vh; overflow-y: auto; }
+}
+</style>
+
+<!-- Modal -->
+<div id="prod-modal-overlay" role="dialog" aria-modal="true">
+  <div class="prod-modal" id="prod-modal">
+    <!-- corners -->
+    <div class="pm-corner tl"></div><div class="pm-corner tr"></div>
+    <div class="pm-corner bl"></div><div class="pm-corner br"></div>
+
+    <!-- top bar -->
+    <div class="pm-topbar">
+      <div class="pm-topbar-left">
+        <div class="pm-topbar-dot"></div>
+        <div class="pm-topbar-id" id="pm-id">PRODUCT — KP/001</div>
+      </div>
+      <button class="pm-close" id="pm-close" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <!-- body -->
+    <div class="pm-body">
+
+      <!-- LEFT: 3D viewer -->
+      <div class="pm-viewer">
+        <div class="pm-viewer-label top-left">3D — MODEL VIEW</div>
+        <div class="pm-viewer-label bot-right">DRAG TO INSPECT</div>
+
+        <!-- orbit rings -->
+        <div class="pm-ring"></div>
+        <div class="pm-ring2"></div>
+
+        <!-- 3D box -->
+        <div class="pm-canvas-wrap">
+          <div class="pm-3d-scene" id="pm-3d-scene">
+            <div class="pm-box">
+              <div class="pm-box-face front">
+                <div style="text-align:center">
+                  <div id="pm-3d-icon" style="margin-bottom:12px;opacity:0.9"></div>
+                  <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(232,115,10,0.6);letter-spacing:2px" id="pm-3d-code">QANTEON</div>
+                  <div class="pm-face-grill" style="margin-top:10px;width:100px;margin-left:auto;margin-right:auto">
+                    <span></span><span></span><span></span><span></span><span></span><span></span>
+                    <span></span><span></span><span></span><span></span><span></span><span></span>
+                  </div>
+                </div>
+              </div>
+              <div class="pm-box-face back">
+                <div style="font-family:'Share Tech Mono',monospace;font-size:8px;color:rgba(232,115,10,0.3);letter-spacing:1px;text-align:center">
+                  KIEBACK&PETER<br>MADE IN GERMANY
+                </div>
+              </div>
+              <div class="pm-box-face right" style="width:80px;left:50px">
+                <div style="display:grid;grid-template-rows:repeat(8,1fr);gap:4px;height:70%;width:40%;">
+                  <span style="background:rgba(232,115,10,0.5);height:2px;border-radius:1px"></span>
+                  <span style="background:rgba(232,115,10,0.3);height:2px;border-radius:1px"></span>
+                  <span style="background:rgba(232,115,10,0.5);height:2px;border-radius:1px"></span>
+                  <span style="background:rgba(232,115,10,0.2);height:2px;border-radius:1px"></span>
+                  <span style="background:rgba(232,115,10,0.4);height:2px;border-radius:1px"></span>
+                  <span style="background:rgba(232,115,10,0.3);height:2px;border-radius:1px"></span>
+                  <span style="background:rgba(232,115,10,0.5);height:2px;border-radius:1px"></span>
+                  <span style="background:rgba(232,115,10,0.2);height:2px;border-radius:1px"></span>
+                </div>
+              </div>
+              <div class="pm-box-face left" style="width:80px;left:50px"></div>
+              <div class="pm-box-face top" style="height:80px;top:20px">
+                <div style="width:60%;height:1px;background:linear-gradient(90deg,transparent,rgba(232,115,10,0.4),transparent)"></div>
+              </div>
+              <div class="pm-box-face bottom" style="height:80px;top:20px"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- axis widget -->
+        <svg class="pm-axes" viewBox="0 0 44 44" fill="none">
+          <line x1="22" y1="22" x2="40" y2="22" stroke="rgba(232,115,10,0.6)" stroke-width="1.5"/>
+          <line x1="22" y1="22" x2="22" y2="4"  stroke="#28CA41" stroke-width="1.5" stroke-opacity="0.6"/>
+          <line x1="22" y1="22" x2="10" y2="34" stroke="#4FA8E8" stroke-width="1.5" stroke-opacity="0.5"/>
+          <circle cx="22" cy="22" r="2" fill="var(--white)" opacity="0.5"/>
+          <text x="42" y="26" font-size="6" fill="rgba(232,115,10,0.6)" font-family="monospace">X</text>
+          <text x="20" y="2"  font-size="6" fill="rgba(40,202,65,0.6)" font-family="monospace">Y</text>
+          <text x="4"  y="38" font-size="6" fill="rgba(79,168,232,0.5)" font-family="monospace">Z</text>
+        </svg>
+      </div>
+
+      <!-- RIGHT: Info -->
+      <div class="pm-info">
+        <div class="pm-badge" id="pm-badge">BMS SYSTEM</div>
+        <div class="pm-product-name" id="pm-name">Qanteon BMS</div>
+        <div class="pm-tagline" id="pm-tagline">An integrated platform combining building control and energy management.</div>
+
+        <div class="pm-specs" id="pm-specs"></div>
+
+        <div class="pm-metrics" id="pm-metrics"></div>
+
+        <div class="pm-features" id="pm-features"></div>
+
+        <div class="pm-cta">
+          <a href="mailto:office-international@kieback-peter.de" class="pm-btn-primary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            Request Datasheet
+          </a>
+          <button class="pm-btn-ghost" onclick="document.getElementById('prod-modal-overlay').classList.remove('active')">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- status bar -->
+    <div class="pm-statusbar">
+      <div class="pm-status-left">
+        <div class="pm-status-dot"></div>
+        SYSTEM ONLINE — LIVE DATA
+      </div>
+      <div class="pm-status-right" id="pm-timestamp"></div>
+    </div>
+  </div>
+</div>
+
 <section id="products">
   <div class="reveal">
     <div class="products-header">
@@ -871,60 +1296,367 @@ body { background:var(--ink); color:var(--text); font-family:'Barlow',sans-serif
         <div class="section-label">Our Products</div>
         <h2 class="section-title">Cutting-Edge<br>Control Technologies</h2>
       </div>
-      <p class="section-desc" style="max-width:300px; margin:0">All our products are manufactured in Germany to the highest standards of quality and efficiency.</p>
+      <p class="section-desc" style="max-width:300px; margin:0">All our products are manufactured in Germany to the highest standards of quality and efficiency. <span style="color:var(--orange);font-size:12px;display:block;margin-top:8px;letter-spacing:1px">↗ CLICK ANY PRODUCT TO EXPLORE</span></p>
     </div>
   </div>
   <div class="products-grid reveal">
-    <div class="product-card">
+
+    <div class="product-card" data-product="0">
       <div class="product-icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line><path d="M6 8h10M6 12h5"></path></svg></div>
       <div class="product-code">QANTEON</div>
       <div class="product-name">BMS System</div>
       <div class="product-desc">An integrated platform combining building control and energy management. Winner of the German Design Award 2018.</div>
+      <div class="prod-click-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg> View Details</div>
     </div>
-    <div class="product-card">
+
+    <div class="product-card" data-product="1">
       <div class="product-icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="var(--white)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="M6 8h2v2H6zm0 4h2v2H6zm6-4h6v2h-6zm0 4h4v2h-4zM6 16h12v2H6z"></path></svg></div>
       <div class="product-code">DDC4020e / DDC4040e</div>
       <div class="product-name">Advanced Automation Stations</div>
       <div class="product-desc">High-performance BACnet automation stations controlling 4-12 DDC systems with a 100,000 data point memory.</div>
+      <div class="prod-click-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg> View Details</div>
     </div>
-    <div class="product-card">
+
+    <div class="product-card" data-product="2">
       <div class="product-icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="var(--white)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6h-6zM4 14h6v6H4zM4 4h6v6H4zM19 14v6M16 17h6"></path></svg></div>
       <div class="product-code">KP-ME-40x</div>
       <div class="product-name">Controllers & Thermostats</div>
       <div class="product-desc">Large LCD display with easy touch controls, ±0.5°C accuracy, RS485 connectivity, and internal/external sensor options.</div>
+      <div class="prod-click-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg> View Details</div>
     </div>
-    <div class="product-card">
+
+    <div class="product-card" data-product="3">
       <div class="product-icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="var(--white)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"></path></svg></div>
       <div class="product-code">RCN-ME800</div>
       <div class="product-name">Dual VAV Controllers</div>
       <div class="product-desc">BACnet controllers for variable air volume with integrated flow sensors and 4.5 Nm torque actuator.</div>
+      <div class="prod-click-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg> View Details</div>
     </div>
-    <div class="product-card">
+
+    <div class="product-card" data-product="4">
       <div class="product-icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="var(--white)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path><path d="M2 12h20"></path></svg></div>
       <div class="product-code">LKP201SYS</div>
       <div class="product-name">CO₂ Sensor</div>
       <div class="product-desc">Infrared CO₂ sensor with a range of 0-10000 ppm, ±40ppm accuracy, and IP6x industrial protection.</div>
+      <div class="prod-click-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg> View Details</div>
     </div>
-    <div class="product-card">
+
+    <div class="product-card" data-product="5">
       <div class="product-icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path><path d="M12 6v6l4 2"></path></svg></div>
       <div class="product-code">KP-U7 / KP-U8</div>
       <div class="product-name">Ultrasonic Water Meters</div>
       <div class="product-desc">No moving parts, long-term high accuracy, dirt-resistant, IP68, supporting NB-IoT and LoRaWAN.</div>
+      <div class="prod-click-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg> View Details</div>
     </div>
-    <div class="product-card">
+
+    <div class="product-card" data-product="6">
       <div class="product-icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="var(--white)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg></div>
       <div class="product-code">LKP101SYS</div>
       <div class="product-name">Carbon Monoxide Sensor</div>
       <div class="product-desc">Instant detection for parking lots and confined spaces. Response time ≤15s, with a 5+ year service lifespan.</div>
+      <div class="prod-click-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg> View Details</div>
     </div>
-    <div class="product-card">
+
+    <div class="product-card" data-product="7">
       <div class="product-icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg></div>
       <div class="product-code">KPDL400</div>
       <div class="product-name">Three-Phase Energy Meter</div>
       <div class="product-desc">Class 0.5s high-precision energy measurement, Modbus RTU communication, and harmonic analysis up to the 31st order.</div>
+      <div class="prod-click-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg> View Details</div>
     </div>
+
   </div>
 </section>
+
+<script>
+// ════════════ PRODUCT DATA ════════════
+const PRODUCTS = [
+  {
+    id: 'KP/BMS-001',
+    code: 'QANTEON',
+    badge: 'BMS PLATFORM',
+    name: 'Qanteon BMS System',
+    tagline: 'An award-winning integrated platform combining building control and energy management. Winner of the German Design Award 2018.',
+    iconSvg: `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line><path d="M6 8h10M6 12h5"></path></svg>`,
+    specs: [
+      { k: 'Protocol',      v: 'BACnet / KNX / LON' },
+      { k: 'Architecture',  v: 'Supervisor Level',    hi: true },
+      { k: 'Origin',        v: 'Germany',             hi: true },
+      { k: 'Award',         v: 'German Design 2018'  },
+      { k: 'Integration',   v: 'Cloud / Edge Ready'  },
+    ],
+    metrics: [
+      { label: 'Energy Savings',  val: '92%', pct: 92 },
+      { label: 'Reliability',     val: '99.9%', pct: 99 },
+      { label: 'System Coverage', val: '85%', pct: 85 },
+      { label: 'Ease of Use',     val: '88%', pct: 88 },
+    ],
+    features: ['BACnet/IP', 'Multi-Protocol', 'Web Dashboard', 'Cloud Ready', 'German Design Award', 'Modular'],
+  },
+  {
+    id: 'KP/DDC-002',
+    code: 'DDC4020e / DDC4040e',
+    badge: 'AUTOMATION STATION',
+    name: 'Advanced Automation Stations',
+    tagline: 'High-performance BACnet automation stations controlling 4–12 DDC sub-systems with a massive 100,000 data point memory.',
+    iconSvg: `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="M6 8h2v2H6zm0 4h2v2H6zm6-4h6v2h-6zm0 4h4v2h-4zM6 16h12v2H6z"></path></svg>`,
+    specs: [
+      { k: 'Protocol',     v: 'BACnet MS/TP & IP' },
+      { k: 'Memory',       v: '100,000 Data Points', hi: true },
+      { k: 'DDC Control',  v: '4 – 12 Systems',     hi: true },
+      { k: 'Connectivity', v: 'Ethernet / RS485'    },
+      { k: 'Certifications', v: 'CE / BACnet BTL'  },
+    ],
+    metrics: [
+      { label: 'Processing Speed', val: '98%', pct: 98 },
+      { label: 'Data Capacity',    val: '100K', pct: 95 },
+      { label: 'Reliability',      val: '99.8%', pct: 99 },
+      { label: 'Scalability',      val: '90%', pct: 90 },
+    ],
+    features: ['BACnet BTL', '100K Points', 'RS485', 'Ethernet', 'Web Server', 'Expandable'],
+  },
+  {
+    id: 'KP/THR-003',
+    code: 'KP-ME-40x',
+    badge: 'CONTROLLER',
+    name: 'Controllers & Thermostats',
+    tagline: 'LCD touch display thermostats with ±0.5°C precision, RS485 Modbus connectivity, and flexible sensor configurations.',
+    iconSvg: `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6h-6zM4 14h6v6H4zM4 4h6v6H4zM19 14v6M16 17h6"></path></svg>`,
+    specs: [
+      { k: 'Accuracy',      v: '±0.5°C',        hi: true },
+      { k: 'Display',       v: 'Large LCD Touch' },
+      { k: 'Protocol',      v: 'RS485 / Modbus' },
+      { k: 'Sensor Input',  v: 'Internal + External' },
+      { k: 'Housing',       v: 'IP30 / Panel Mount' },
+    ],
+    metrics: [
+      { label: 'Temp. Accuracy', val: '±0.5°C', pct: 96 },
+      { label: 'Response Time',  val: 'Fast', pct: 89 },
+      { label: 'Durability',     val: '95%', pct: 95 },
+      { label: 'Ease Install',   val: '93%', pct: 93 },
+    ],
+    features: ['±0.5°C', 'LCD Touch', 'RS485', 'Modbus RTU', 'DIN Rail', 'IP30'],
+  },
+  {
+    id: 'KP/VAV-004',
+    code: 'RCN-ME800',
+    badge: 'VAV CONTROLLER',
+    name: 'Dual VAV Controllers',
+    tagline: 'BACnet MS/TP controllers for variable air volume systems with integrated flow sensors and 4.5 Nm torque actuator built in.',
+    iconSvg: `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"></path></svg>`,
+    specs: [
+      { k: 'Protocol',   v: 'BACnet MS/TP',    hi: true },
+      { k: 'Actuator',   v: '4.5 Nm Torque',   hi: true },
+      { k: 'Flow Sensor', v: 'Integrated'      },
+      { k: 'Channels',   v: 'Dual VAV'         },
+      { k: 'Mount',      v: 'Direct on Damper' },
+    ],
+    metrics: [
+      { label: 'Flow Accuracy', val: '97%', pct: 97 },
+      { label: 'Torque Output', val: '4.5Nm', pct: 85 },
+      { label: 'Energy Saving', val: '88%', pct: 88 },
+      { label: 'Reliability',   val: '99%', pct: 99 },
+    ],
+    features: ['BACnet MS/TP', 'Dual Channel', '4.5 Nm', 'Flow Sensor', 'Auto-detect', 'Direct Mount'],
+  },
+  {
+    id: 'KP/SEN-005',
+    code: 'LKP201SYS',
+    badge: 'AIR QUALITY SENSOR',
+    name: 'CO₂ Sensor',
+    tagline: 'Infrared CO₂ sensor with 0–10000 ppm range, ±40 ppm accuracy, and IP6x industrial-grade protection for demanding environments.',
+    iconSvg: `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path><path d="M2 12h20"></path></svg>`,
+    specs: [
+      { k: 'Technology',  v: 'Infrared (NDIR)',   hi: true },
+      { k: 'Range',       v: '0 – 10,000 ppm',   hi: true },
+      { k: 'Accuracy',    v: '±40 ppm'           },
+      { k: 'Protection',  v: 'IP6x Industrial'   },
+      { k: 'Output',      v: '0–10V / 4–20mA'   },
+    ],
+    metrics: [
+      { label: 'Detection Range',  val: '10K ppm', pct: 94 },
+      { label: 'Accuracy',         val: '±40ppm', pct: 92 },
+      { label: 'Response Time',    val: '<30s', pct: 88 },
+      { label: 'IP Protection',    val: 'IP6x', pct: 96 },
+    ],
+    features: ['NDIR Infrared', 'IP6x', '0-10V Out', '4-20mA', 'BACnet', 'DIN Rail'],
+  },
+  {
+    id: 'KP/MET-006',
+    code: 'KP-U7 / KP-U8',
+    badge: 'UTILITY METERING',
+    name: 'Ultrasonic Water Meters',
+    tagline: 'No moving parts, long-term high accuracy, dirt-resistant design with IP68 rating, supporting NB-IoT and LoRaWAN wireless connectivity.',
+    iconSvg: `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path><path d="M12 6v6l4 2"></path></svg>`,
+    specs: [
+      { k: 'Technology',  v: 'Ultrasonic',      hi: true },
+      { k: 'Protection',  v: 'IP68',            hi: true },
+      { k: 'Wireless',    v: 'NB-IoT / LoRaWAN'},
+      { k: 'Moving Parts', v: 'None'            },
+      { k: 'Lifespan',    v: '15+ Years'        },
+    ],
+    metrics: [
+      { label: 'Accuracy',      val: '99.5%', pct: 99 },
+      { label: 'IP Protection', val: 'IP68',  pct: 100 },
+      { label: 'Lifespan',      val: '15yr+', pct: 90 },
+      { label: 'Connectivity',  val: 'IoT',   pct: 85 },
+    ],
+    features: ['Ultrasonic', 'IP68', 'NB-IoT', 'LoRaWAN', 'No Moving Parts', 'MID Class C'],
+  },
+  {
+    id: 'KP/SEN-007',
+    code: 'LKP101SYS',
+    badge: 'GAS DETECTION',
+    name: 'Carbon Monoxide Sensor',
+    tagline: 'Instant CO detection for parking structures and confined spaces. Response time ≤15s with a 5+ year certified service lifespan.',
+    iconSvg: `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>`,
+    specs: [
+      { k: 'Gas Type',      v: 'Carbon Monoxide',  hi: true },
+      { k: 'Response Time', v: '≤ 15 seconds',     hi: true },
+      { k: 'Lifespan',      v: '5+ Years'         },
+      { k: 'Application',   v: 'Parking / Confined'},
+      { k: 'Output',        v: 'Relay + Analog'   },
+    ],
+    metrics: [
+      { label: 'Response Time', val: '<15s', pct: 98 },
+      { label: 'Sensitivity',   val: '99%',  pct: 99 },
+      { label: 'Lifespan',      val: '5yr+', pct: 80 },
+      { label: 'Reliability',   val: '99.5%', pct: 99 },
+    ],
+    features: ['CO Detection', '≤15s Response', 'Relay Output', '4-20mA', 'Alarm Relay', 'DIN Rail'],
+  },
+  {
+    id: 'KP/PWR-008',
+    code: 'KPDL400',
+    badge: 'ENERGY METERING',
+    name: 'Three-Phase Energy Meter',
+    tagline: 'Class 0.5s high-precision three-phase energy measurement with Modbus RTU communication and harmonic analysis up to the 31st order.',
+    iconSvg: `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>`,
+    specs: [
+      { k: 'Accuracy Class',  v: 'Class 0.5s',      hi: true },
+      { k: 'Harmonics',       v: 'Up to 31st Order', hi: true },
+      { k: 'Protocol',        v: 'Modbus RTU'       },
+      { k: 'Phases',          v: '3-Phase + Neutral' },
+      { k: 'Display',         v: 'LCD Multi-param'  },
+    ],
+    metrics: [
+      { label: 'Measurement Acc.', val: '0.5s',  pct: 97 },
+      { label: 'Harmonic Analysis', val: '31st', pct: 93 },
+      { label: 'Reliability',       val: '99%',  pct: 99 },
+      { label: 'Data Points',       val: '40+',  pct: 88 },
+    ],
+    features: ['Class 0.5s', 'Modbus RTU', '3-Phase', 'Harmonics', 'DIN Rail', 'Multi-tariff'],
+  },
+];
+
+// ════════════ MODAL LOGIC ════════════
+(function() {
+  const overlay  = document.getElementById('prod-modal-overlay');
+  const closeBtn = document.getElementById('pm-close');
+
+  function openProduct(idx) {
+    const p = PRODUCTS[idx];
+    if (!p) return;
+
+    // populate
+    document.getElementById('pm-id').textContent     = 'PRODUCT — ' + p.id;
+    document.getElementById('pm-badge').textContent   = p.badge;
+    document.getElementById('pm-name').textContent    = p.name;
+    document.getElementById('pm-tagline').textContent = p.tagline;
+    document.getElementById('pm-3d-code').textContent = p.code;
+    document.getElementById('pm-3d-icon').innerHTML   = p.iconSvg;
+
+    // timestamp
+    const now = new Date();
+    document.getElementById('pm-timestamp').textContent =
+      'REF: ' + p.id + ' — ' + now.toISOString().slice(0,19).replace('T',' ');
+
+    // specs
+    const specsEl = document.getElementById('pm-specs');
+    specsEl.innerHTML = p.specs.map(s => `
+      <div class="pm-spec-row">
+        <span class="pm-spec-key">${s.k}</span>
+        <span class="pm-spec-val${s.hi ? ' orange' : ''}">${s.v}</span>
+      </div>
+    `).join('');
+
+    // metrics
+    const metricsEl = document.getElementById('pm-metrics');
+    metricsEl.innerHTML = p.metrics.map(m => `
+      <div class="pm-metric">
+        <div class="pm-metric-label">
+          <span>${m.label}</span><span>${m.val}</span>
+        </div>
+        <div class="pm-metric-bar">
+          <div class="pm-metric-fill" data-pct="${m.pct}" style="width:0%"></div>
+        </div>
+      </div>
+    `).join('');
+
+    // features
+    const featEl = document.getElementById('pm-features');
+    featEl.innerHTML = p.features.map(f => `<span class="pm-feature">${f}</span>`).join('');
+
+    // open
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+
+    // animate bars after a tick
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        document.querySelectorAll('.pm-metric-fill').forEach(bar => {
+          bar.style.width = bar.dataset.pct + '%';
+        });
+      }, 60);
+    });
+
+    // reset 3D animation
+    const scene = document.getElementById('pm-3d-scene');
+    scene.style.animation = 'none';
+    void scene.offsetWidth; // reflow
+    scene.style.animation = '';
+  }
+
+  function closeModal() {
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  // attach to cards
+  document.querySelectorAll('.product-card[data-product]').forEach(card => {
+    card.addEventListener('click', () => openProduct(+card.dataset.product));
+  });
+
+  closeBtn.addEventListener('click', closeModal);
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  // drag-to-rotate 3D scene
+  const scene = document.getElementById('pm-3d-scene');
+  let dragging = false, lastX = 0, lastY = 0, rotX = 10, rotY = 0;
+  scene.addEventListener('mousedown', e => { dragging = true; lastX = e.clientX; lastY = e.clientY; scene.style.animationPlayState = 'paused'; });
+  document.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    rotY += (e.clientX - lastX) * 0.6;
+    rotX -= (e.clientY - lastY) * 0.3;
+    rotX = Math.max(-40, Math.min(40, rotX));
+    scene.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+    lastX = e.clientX; lastY = e.clientY;
+  });
+  document.addEventListener('mouseup', () => { dragging = false; });
+
+  // touch support
+  scene.addEventListener('touchstart', e => { dragging = true; lastX = e.touches[0].clientX; lastY = e.touches[0].clientY; scene.style.animationPlayState = 'paused'; });
+  scene.addEventListener('touchmove', e => {
+    if (!dragging) return;
+    rotY += (e.touches[0].clientX - lastX) * 0.6;
+    rotX -= (e.touches[0].clientY - lastY) * 0.3;
+    scene.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+    lastX = e.touches[0].clientX; lastY = e.touches[0].clientY;
+  });
+  scene.addEventListener('touchend', () => { dragging = false; });
+})();
+</script>
   
 <section id="model-explorer" class="reveal">
 
